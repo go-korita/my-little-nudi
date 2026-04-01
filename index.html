@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>갯민숭달팽이 위젯</title>
+  <!-- Caveat: 말풍선 손글씨 폰트 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ====== COLLAPSED 상태 ====== -->
+  <div id="collapsed-view">
+    <div id="speech-bubble">
+      <span id="speech-text">할 일 없음</span>
+    </div>
+    <div id="character-area">
+      <div id="character"></div>
+      <div id="badge" class="hidden">0</div>
+    </div>
+  </div>
+
+  <!-- ====== EXPANDED 상태 ====== -->
+  <div id="expanded-view" class="hidden">
+    <div id="card">
+      <div id="card-header">
+        <div id="header-char"></div>
+        <span id="card-title">오늘 할 일</span>
+        <button id="collapse-btn" title="접기">−</button>
+      </div>
+      <div id="todo-list"></div>
+      <div id="input-area">
+        <input type="text" id="todo-input" placeholder="+ 빠르게 추가...">
+      </div>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>

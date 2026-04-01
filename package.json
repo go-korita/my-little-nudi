@@ -1,0 +1,15 @@
+{
+  "name": "nudibranch-widget",
+  "version": "1.0.0",
+  "description": "갯민숭달팽이 플로팅 투두 위젯",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "dependencies": {
+    "electron-store": "^7.0.3"
+  },
+  "devDependencies": {
+    "electron": "^28.0.0"
+  }
+}
