@@ -1,3 +1,16 @@
+/* ====== 폰트 등록 ====== */
+@font-face {
+  font-family: 'SOYO Maple';
+  src: url('assets/SOYO Maple Regular.otf');
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'SOYO Maple';
+  src: url('assets/SOYO Maple Bold.otf');
+  font-weight: 700;
+}
+
 /* ====== 기본 리셋 ====== */
 * {
   margin: 0;
@@ -12,7 +25,8 @@ html, body {
   height: 100%;
   background: transparent;
   overflow: hidden;
-  font-family: -apple-system, 'Apple SD Gothic Neo', 'Nanum Gothic', sans-serif;
+  font-family: 'SOYO Maple', -apple-system, sans-serif;
+  font-weight: 400;
 }
 
 .hidden {
@@ -38,9 +52,9 @@ html, body {
   border: 1px solid #D8D8D8;
   border-radius: 10px;
   padding: 5px 11px;
-  font-family: 'Caveat', cursive;
+  font-family: 'SOYO Maple', sans-serif;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   color: #1A1A1A;
   white-space: nowrap;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
@@ -81,6 +95,7 @@ html, body {
 #character {
   display: block;
   line-height: 0;
+  filter: drop-shadow(0px 2px 6px rgba(0, 0, 0, 0.25));
 }
 
 /* 빨간 뱃지 */
@@ -106,30 +121,56 @@ html, body {
 /* ====== EXPANDED 상태 ====== */
 #expanded-view {
   width: 280px;
-  height: 400px;
+  height: 440px;
   padding: 10px;
-}
-
-/* 투두 카드 */
-#card {
-  width: 260px;
-  height: 380px;
-  background-color: #F5F5F5;
-  /* 도트 패턴 overlay */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Ccircle cx='8' cy='8' r='2' fill='%231A1A1A' fill-opacity='0.08'/%3E%3C/svg%3E");
-  border: 1px solid #D8D8D8;
-  border-radius: 10px;
-  padding: 9px;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.14);
   display: flex;
   flex-direction: column;
 }
 
-/* 카드 헤더 (드래그 가능) */
+/* 말풍선 카드 */
+#card {
+  width: 260px;
+  flex: 1;
+  background-color: #F5F5F5;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Ccircle cx='8' cy='8' r='2' fill='%231A1A1A' fill-opacity='0.08'/%3E%3C/svg%3E");
+  border: 1px solid #D8D8D8;
+  border-radius: 18px;
+  padding: 14px 12px 12px 12px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.14);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  -webkit-app-region: drag;
+}
+
+/* 말풍선 꼬리 (테두리) */
+#card::before {
+  content: '';
+  position: absolute;
+  bottom: -7px;
+  right: 22px;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 7px solid #D8D8D8;
+}
+
+/* 말풍선 꼬리 (채움) */
+#card::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  right: 23px;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid #F5F5F5;
+  z-index: 2;
+}
+
+/* 카드 헤더 */
 #card-header {
   display: flex;
   align-items: center;
-  gap: 7px;
+  justify-content: space-between;
   padding-bottom: 8px;
   border-bottom: 1px solid #E2E2E2;
   margin-bottom: 6px;
@@ -138,15 +179,9 @@ html, body {
 }
 
 #card-title {
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   color: #1A1A1A;
-  flex: 1;
-}
-
-#header-char {
-  -webkit-app-region: no-drag;
-  line-height: 0;
 }
 
 #collapse-btn {
@@ -166,6 +201,21 @@ html, body {
 #collapse-btn:hover {
   color: #555555;
   background: rgba(0, 0, 0, 0.06);
+}
+
+/* 카드 하단 캐릭터 영역 */
+#expanded-bottom {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 16px;
+  padding-top: 6px;
+  flex-shrink: 0;
+}
+
+#header-char {
+  line-height: 0;
+  -webkit-app-region: no-drag;
+  filter: drop-shadow(0px 2px 6px rgba(0, 0, 0, 0.25));
 }
 
 /* 투두 목록 */
@@ -286,13 +336,79 @@ html, body {
   font-size: 12px;
   color: #1A1A1A;
   outline: none;
-  font-family: -apple-system, 'Apple SD Gothic Neo', sans-serif;
+  font-family: 'SOYO Maple', sans-serif;
   -webkit-user-select: text;
   user-select: text;
 }
 
 #todo-input::placeholder {
   color: #C0C0C0;
+}
+
+/* ====== 캐릭터 스프링 애니메이션 ====== */
+
+@keyframes char-spring-in {
+  from {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes char-spring-out {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+}
+
+#header-char.char-appearing {
+  animation: char-spring-in 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+#header-char.char-disappearing {
+  animation: char-spring-out 0.24s cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards;
+}
+
+/* ====== 카드 등장 / 퇴장 애니메이션 ====== */
+
+@keyframes card-appear {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes card-disappear {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.88);
+    opacity: 0;
+  }
+}
+
+#card.appearing {
+  animation: card-appear 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  transform-origin: 78% bottom;
+}
+
+#card.disappearing {
+  animation: card-disappear 0.24s cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards;
+  transform-origin: 78% bottom;
 }
 
 /* ====== 어텐션 애니메이션 ====== */

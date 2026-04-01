@@ -61,8 +61,8 @@ ipcMain.on('window:expand', () => {
 
   // 우측 하단 앵커를 유지하면서 크게
   const newX = Math.max(0, x + 140 - 280)
-  const newY = Math.max(0, y + 120 - 400)
-  win.setBounds({ x: newX, y: newY, width: 280, height: 400 })
+  const newY = Math.max(0, y + 120 - 440)
+  win.setBounds({ x: newX, y: newY, width: 280, height: 440 })
 })
 
 ipcMain.on('window:collapse', () => {

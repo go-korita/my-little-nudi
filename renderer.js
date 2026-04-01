@@ -1,45 +1,10 @@
 const { ipcRenderer } = require('electron')
 
 // ======================================================
-// 갯민숭달팽이 SVG — 나중에 피그마 애셋으로 교체 예정
+// 갯민숭달팽이 캐릭터 — assets/nudi.svg 사용
 // ======================================================
-const NUDIBRANCH_SVG = `
-<svg width="56" height="52" viewBox="0 0 56 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- 더듬이 (rhinophores) -->
-  <line x1="15" y1="22" x2="11" y2="10" stroke="#2A2A2A" stroke-width="1.5" stroke-linecap="round"/>
-  <line x1="20" y1="19" x2="17" y2="7" stroke="#2A2A2A" stroke-width="1.5" stroke-linecap="round"/>
-  <circle cx="11" cy="8.5" r="2.8" fill="#2A2A2A"/>
-  <circle cx="17" cy="6" r="2.8" fill="#2A2A2A"/>
-  <!-- 몸통 -->
-  <path d="M 7 36 C 3 28 5 20 14 18 C 21 16 36 16 45 22 C 53 27 53 36 45 41 C 37 45 14 45 7 36 Z"
-        fill="#E6E6E6" stroke="#2A2A2A" stroke-width="1.5" stroke-linejoin="round"/>
-  <!-- 등 지느러미 (cerata) -->
-  <ellipse cx="28" cy="14" rx="4.5" ry="7.5" fill="#CECECE" stroke="#2A2A2A" stroke-width="1.2" transform="rotate(-5 28 14)"/>
-  <ellipse cx="37" cy="16" rx="4" ry="7" fill="#CECECE" stroke="#2A2A2A" stroke-width="1.2" transform="rotate(10 37 16)"/>
-  <ellipse cx="44" cy="22" rx="3.5" ry="6" fill="#CECECE" stroke="#2A2A2A" stroke-width="1.2" transform="rotate(28 44 22)"/>
-  <!-- 눈 -->
-  <circle cx="16" cy="30" r="3.8" fill="#2A2A2A"/>
-  <circle cx="17.6" cy="28.4" r="1.3" fill="white"/>
-  <!-- 입 -->
-  <path d="M 11.5 34.5 Q 15.5 38 20 34.5" stroke="#2A2A2A" stroke-width="1.3" fill="none" stroke-linecap="round"/>
-</svg>`
-
-// 헤더용 소형 SVG (같은 viewBox, 크기만 줄임)
-const NUDIBRANCH_SMALL_SVG = `
-<svg width="28" height="26" viewBox="0 0 56 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <line x1="15" y1="22" x2="11" y2="10" stroke="#2A2A2A" stroke-width="1.5" stroke-linecap="round"/>
-  <line x1="20" y1="19" x2="17" y2="7" stroke="#2A2A2A" stroke-width="1.5" stroke-linecap="round"/>
-  <circle cx="11" cy="8.5" r="2.8" fill="#2A2A2A"/>
-  <circle cx="17" cy="6" r="2.8" fill="#2A2A2A"/>
-  <path d="M 7 36 C 3 28 5 20 14 18 C 21 16 36 16 45 22 C 53 27 53 36 45 41 C 37 45 14 45 7 36 Z"
-        fill="#E6E6E6" stroke="#2A2A2A" stroke-width="1.5" stroke-linejoin="round"/>
-  <ellipse cx="28" cy="14" rx="4.5" ry="7.5" fill="#CECECE" stroke="#2A2A2A" stroke-width="1.2" transform="rotate(-5 28 14)"/>
-  <ellipse cx="37" cy="16" rx="4" ry="7" fill="#CECECE" stroke="#2A2A2A" stroke-width="1.2" transform="rotate(10 37 16)"/>
-  <ellipse cx="44" cy="22" rx="3.5" ry="6" fill="#CECECE" stroke="#2A2A2A" stroke-width="1.2" transform="rotate(28 44 22)"/>
-  <circle cx="16" cy="30" r="3.8" fill="#2A2A2A"/>
-  <circle cx="17.6" cy="28.4" r="1.3" fill="white"/>
-  <path d="M 11.5 34.5 Q 15.5 38 20 34.5" stroke="#2A2A2A" stroke-width="1.3" fill="none" stroke-linecap="round"/>
-</svg>`
+const NUDIBRANCH_SVG = `<img src="assets/nudi.svg" width="73" draggable="false">`
+const NUDIBRANCH_SMALL_SVG = `<img src="assets/nudi.svg" width="48" draggable="false">`
 
 // ======================================================
 // 상태
@@ -59,6 +24,7 @@ const headerCharEl  = document.getElementById('header-char')
 const todoList      = document.getElementById('todo-list')
 const todoInput     = document.getElementById('todo-input')
 const collapseBtn   = document.getElementById('collapse-btn')
+const cardEl        = document.getElementById('card')
 
 // ======================================================
 // 초기화
@@ -155,14 +121,40 @@ function expandWidget() {
   collapsedView.classList.add('hidden')
   expandedView.classList.remove('hidden')
   ipcRenderer.send('window:expand')
+
+  // 카드 등장 애니메이션
+  cardEl.classList.remove('appearing')
+  void cardEl.offsetWidth
+  cardEl.classList.add('appearing')
+  setTimeout(() => cardEl.classList.remove('appearing'), 350)
+
+  // 캐릭터 스프링 등장
+  headerCharEl.classList.remove('char-appearing')
+  void headerCharEl.offsetWidth
+  headerCharEl.classList.add('char-appearing')
+  setTimeout(() => headerCharEl.classList.remove('char-appearing'), 450)
+
   setTimeout(() => todoInput.focus(), 50)
 }
 
+let isCollapsing = false
+
 function collapseWidget() {
-  isExpanded = false
-  expandedView.classList.add('hidden')
-  collapsedView.classList.remove('hidden')
-  ipcRenderer.send('window:collapse')
+  if (!isExpanded || isCollapsing) return
+  isCollapsing = true
+
+  // 카드 퇴장 애니메이션 재생 후 숨기기
+  cardEl.classList.add('disappearing')
+  headerCharEl.classList.add('char-disappearing')
+  setTimeout(() => {
+    isExpanded = false
+    isCollapsing = false
+    expandedView.classList.add('hidden')
+    collapsedView.classList.remove('hidden')
+    ipcRenderer.send('window:collapse')
+    cardEl.classList.remove('disappearing')
+    headerCharEl.classList.remove('char-disappearing')
+  }, 200)
 }
 
 // ======================================================

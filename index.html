@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>갯민숭달팽이 위젯</title>
-  <!-- Caveat: 말풍선 손글씨 폰트 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&display=swap" rel="stylesheet">
@@ -24,9 +23,9 @@
 
   <!-- ====== EXPANDED 상태 ====== -->
   <div id="expanded-view" class="hidden">
+    <!-- 말풍선 카드 -->
     <div id="card">
       <div id="card-header">
-        <div id="header-char"></div>
         <span id="card-title">오늘 할 일</span>
         <button id="collapse-btn" title="접기">−</button>
       </div>
@@ -34,6 +33,10 @@
       <div id="input-area">
         <input type="text" id="todo-input" placeholder="+ 빠르게 추가...">
       </div>
+    </div>
+    <!-- 캐릭터 (카드 아래) -->
+    <div id="expanded-bottom">
+      <div id="header-char"></div>
     </div>
   </div>
 
