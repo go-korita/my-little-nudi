@@ -12,11 +12,11 @@ function createWindow() {
 
   // 기본 위치: 화면 우측 하단
   collapsedX = sw - 160
-  collapsedY = sh - 140
+  collapsedY = sh - 160
 
   win = new BrowserWindow({
     width: 140,
-    height: 120,
+    height: 140,
     x: collapsedX,
     y: collapsedY,
     frame: false,
@@ -61,13 +61,13 @@ ipcMain.on('window:expand', () => {
 
   // 우측 하단 앵커를 유지하면서 크게
   const newX = Math.max(0, x + 140 - 280)
-  const newY = Math.max(0, y + 120 - 440)
+  const newY = Math.max(0, y + 140 - 440)
   win.setBounds({ x: newX, y: newY, width: 280, height: 440 })
 })
 
 ipcMain.on('window:collapse', () => {
   // 저장된 collapsed 위치로 복원
-  win.setBounds({ x: collapsedX, y: collapsedY, width: 140, height: 120 })
+  win.setBounds({ x: collapsedX, y: collapsedY, width: 140, height: 140 })
 })
 
 // ====== IPC: 드래그 (collapsed 상태) ======

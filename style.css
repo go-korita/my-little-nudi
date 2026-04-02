@@ -36,11 +36,12 @@ html, body {
 /* ====== COLLAPSED 상태 ====== */
 #collapsed-view {
   width: 140px;
-  height: 120px;
+  height: 140px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
+  padding-bottom: 6px;
   gap: 6px;
   cursor: default;
 }
@@ -101,7 +102,7 @@ html, body {
 /* 빨간 뱃지 */
 #badge {
   position: absolute;
-  top: -5px;
+  top: 0px;
   right: -8px;
   background: #E8000D;
   color: #FFFFFF;
