@@ -11,12 +11,12 @@ function createWindow() {
   const { width: sw, height: sh } = screen.getPrimaryDisplay().workAreaSize
 
   // 기본 위치: 화면 우측 하단
-  collapsedX = sw - 160
-  collapsedY = sh - 160
+  collapsedX = sw - 200
+  collapsedY = sh - 200
 
   win = new BrowserWindow({
-    width: 140,
-    height: 140,
+    width: 180,
+    height: 180,
     x: collapsedX,
     y: collapsedY,
     frame: false,
@@ -33,11 +33,24 @@ function createWindow() {
 
   win.loadFile('index.html')
 
+  // 투명 영역 클릭 통과 (forward: true → 마우스 이동은 계속 감지)
+  win.setIgnoreMouseEvents(true, { forward: true })
+
   // 개발할 때 DevTools 보고 싶으면 아래 주석 해제
   // win.webContents.openDevTools({ mode: 'detach' })
 }
 
-app.whenReady().then(createWindow)
+app.whenReady().then(() => {
+  createWindow()
+
+  // 컴퓨터 켤 때 자동 실행 (빌드된 앱에서만 동작)
+  if (app.isPackaged) {
+    app.setLoginItemSettings({
+      openAtLogin: true,
+      openAsHidden: true
+    })
+  }
+})
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()
@@ -60,14 +73,23 @@ ipcMain.on('window:expand', () => {
   collapsedY = y
 
   // 우측 하단 앵커를 유지하면서 크게
-  const newX = Math.max(0, x + 140 - 280)
-  const newY = Math.max(0, y + 140 - 440)
+  const newX = Math.max(0, x + 180 - 280)
+  const newY = Math.max(0, y + 180 - 440)
   win.setBounds({ x: newX, y: newY, width: 280, height: 440 })
 })
 
 ipcMain.on('window:collapse', () => {
   // 저장된 collapsed 위치로 복원
-  win.setBounds({ x: collapsedX, y: collapsedY, width: 140, height: 140 })
+  win.setBounds({ x: collapsedX, y: collapsedY, width: 180, height: 180 })
+})
+
+// ====== IPC: 클릭 통과 토글 ======
+ipcMain.on('mouse:enter-interactive', () => {
+  win.setIgnoreMouseEvents(false)
+})
+
+ipcMain.on('mouse:leave-interactive', () => {
+  win.setIgnoreMouseEvents(true, { forward: true })
 })
 
 // ====== IPC: 드래그 (collapsed 상태) ======

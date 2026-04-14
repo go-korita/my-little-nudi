@@ -3,9 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>갯민숭달팽이 위젯</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -16,7 +13,7 @@
       <span id="speech-text">할 일 없음</span>
     </div>
     <div id="character-area">
-      <div id="character"></div>
+      <canvas id="character-canvas" width="146" height="146"></canvas>
       <div id="badge" class="hidden">0</div>
     </div>
   </div>
@@ -36,10 +33,11 @@
     </div>
     <!-- 캐릭터 (카드 아래) -->
     <div id="expanded-bottom">
-      <div id="header-char"></div>
+      <canvas id="header-char-canvas" width="96" height="96"></canvas>
     </div>
   </div>
 
+  <script src="node_modules/@rive-app/canvas/rive.js"></script>
   <script src="renderer.js"></script>
 </body>
 </html>

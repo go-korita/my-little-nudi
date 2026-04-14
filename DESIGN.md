@@ -33,8 +33,7 @@ SVG `<pattern>`으로 구현.
 
 | 용도 | 폰트 | 크기 |
 |------|------|------|
-| 말풍선 | Caveat (Google Fonts) | 11~12px |
-| UI 일반 | 시스템 둥근 고딕 | 12~13px |
+| 전체 (말풍선·UI 공통) | Pyeojin Gothic (로컬 OTF, Regular/Semibold) | 12~15px |
 
 ---
 

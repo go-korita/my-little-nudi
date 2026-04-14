@@ -1,10 +1,36 @@
 const { ipcRenderer } = require('electron')
 
 // ======================================================
-// 갯민숭달팽이 캐릭터 — assets/nudi.svg 사용
+// 갯민숭달팽이 캐릭터 — Rive 애니메이션
 // ======================================================
-const NUDIBRANCH_SVG = `<img src="assets/nudi.svg" width="73" draggable="false">`
-const NUDIBRANCH_SMALL_SVG = `<img src="assets/nudi.svg" width="48" draggable="false">`
+const RIVE_FILE = 'assets/nudi-motion.riv'
+
+// Rive 인스턴스 관리 (나중에 모션 2~3가지로 확장 예정)
+let collapsedRive = null  // collapsed 상태 캐릭터
+let expandedRive = null   // expanded 상태 캐릭터
+
+/**
+ * Rive 캐릭터를 캔버스에 로드
+ * @param {HTMLCanvasElement} canvas - 렌더링할 캔버스
+ * @param {object} options - { stateMachine, animation } 등 나중에 모션 분기용
+ * @returns {rive.Rive} Rive 인스턴스
+ */
+function loadRiveCharacter(canvas, options = {}) {
+  const config = {
+    src: RIVE_FILE,
+    canvas: canvas,
+    autoplay: true,
+    fit: rive.Fit.Contain,
+    alignment: rive.Alignment.Center,
+  }
+
+  // 스테이트 머신이 있으면 스테이트 머신으로, 없으면 기본 재생
+  if (options.stateMachine) {
+    config.stateMachines = options.stateMachine
+  }
+
+  return new rive.Rive(config)
+}
 
 // ======================================================
 // 상태
@@ -15,31 +41,38 @@ let isExpanded = false
 // ======================================================
 // DOM 참조
 // ======================================================
-const collapsedView = document.getElementById('collapsed-view')
-const expandedView  = document.getElementById('expanded-view')
-const speechText    = document.getElementById('speech-text')
-const badge         = document.getElementById('badge')
-const characterEl   = document.getElementById('character')
-const headerCharEl  = document.getElementById('header-char')
-const todoList      = document.getElementById('todo-list')
-const todoInput     = document.getElementById('todo-input')
-const collapseBtn   = document.getElementById('collapse-btn')
-const cardEl        = document.getElementById('card')
+const collapsedView      = document.getElementById('collapsed-view')
+const expandedView       = document.getElementById('expanded-view')
+const speechBubble       = document.getElementById('speech-bubble')
+const speechText         = document.getElementById('speech-text')
+const badge              = document.getElementById('badge')
+const characterCanvas    = document.getElementById('character-canvas')
+const headerCharCanvas   = document.getElementById('header-char-canvas')
+const todoList           = document.getElementById('todo-list')
+const todoInput          = document.getElementById('todo-input')
+const collapseBtn        = document.getElementById('collapse-btn')
+const cardEl             = document.getElementById('card')
 
 // ======================================================
 // 초기화
 // ======================================================
 async function init() {
-  // SVG 삽입
-  characterEl.innerHTML = NUDIBRANCH_SVG
-  headerCharEl.innerHTML = NUDIBRANCH_SMALL_SVG
+  // Rive 캐릭터 로드 (collapsed + expanded 둘 다 미리 로드)
+  collapsedRive = loadRiveCharacter(characterCanvas, {
+    stateMachine: 'State Machine 1'
+  })
+  expandedRive = loadRiveCharacter(headerCharCanvas, {
+    stateMachine: 'State Machine 1'
+  })
+  // expanded는 처음엔 숨겨져 있으니 pause
+  expandedRive.pause()
 
   // 저장된 투두 불러오기
   todos = await ipcRenderer.invoke('store:get')
   render()
 
-  // 1시간마다 어텐션 모션 (테스트: 5초)
-  setInterval(playAttentionAnimation, 5 * 1000)
+  // 15초마다 어텐션 모션
+  setInterval(playAttentionAnimation, 10 * 1000)
 }
 
 // ======================================================
@@ -122,6 +155,10 @@ function expandWidget() {
   expandedView.classList.remove('hidden')
   ipcRenderer.send('window:expand')
 
+  // Rive 전환
+  if (collapsedRive) collapsedRive.pause()
+  if (expandedRive) expandedRive.play()
+
   // 카드 등장 애니메이션
   cardEl.classList.remove('appearing')
   void cardEl.offsetWidth
@@ -129,10 +166,11 @@ function expandWidget() {
   setTimeout(() => cardEl.classList.remove('appearing'), 350)
 
   // 캐릭터 스프링 등장
-  headerCharEl.classList.remove('char-appearing')
-  void headerCharEl.offsetWidth
-  headerCharEl.classList.add('char-appearing')
-  setTimeout(() => headerCharEl.classList.remove('char-appearing'), 450)
+  const headerCharWrap = headerCharCanvas.parentElement
+  headerCharWrap.classList.remove('char-appearing')
+  void headerCharWrap.offsetWidth
+  headerCharWrap.classList.add('char-appearing')
+  setTimeout(() => headerCharWrap.classList.remove('char-appearing'), 450)
 
   setTimeout(() => todoInput.focus(), 50)
 }
@@ -143,9 +181,10 @@ function collapseWidget() {
   if (!isExpanded || isCollapsing) return
   isCollapsing = true
 
-  // 카드 퇴장 애니메이션 재생 후 숨기기
+  // 카드 퇴장 애니메이션
   cardEl.classList.add('disappearing')
-  headerCharEl.classList.add('char-disappearing')
+  headerCharCanvas.parentElement.classList.add('char-disappearing')
+
   setTimeout(() => {
     isExpanded = false
     isCollapsing = false
@@ -153,36 +192,46 @@ function collapseWidget() {
     collapsedView.classList.remove('hidden')
     ipcRenderer.send('window:collapse')
     cardEl.classList.remove('disappearing')
-    headerCharEl.classList.remove('char-disappearing')
+    headerCharCanvas.parentElement.classList.remove('char-disappearing')
+
+    // Rive 전환
+    if (expandedRive) expandedRive.pause()
+    if (collapsedRive) collapsedRive.play()
   }, 200)
 }
 
 // ======================================================
 // Collapsed 상태 드래그 (클릭과 구분)
+// 캐릭터 캔버스 + 말풍선만 터치 영역
 // ======================================================
-collapsedView.addEventListener('mousedown', (e) => {
-  const startX = e.screenX
-  const startY = e.screenY
-  let hasMoved = false
+function setupDragAndClick(el) {
+  el.addEventListener('mousedown', (e) => {
+    const startX = e.screenX
+    const startY = e.screenY
+    let hasMoved = false
 
-  ipcRenderer.send('drag:start', { mouseX: startX, mouseY: startY })
+    ipcRenderer.send('drag:start', { mouseX: startX, mouseY: startY })
 
-  function onMouseMove(e) {
-    if (Math.abs(e.screenX - startX) > 4 || Math.abs(e.screenY - startY) > 4) {
-      hasMoved = true
-      ipcRenderer.send('drag:move', { mouseX: e.screenX, mouseY: e.screenY })
+    function onMouseMove(e) {
+      if (Math.abs(e.screenX - startX) > 4 || Math.abs(e.screenY - startY) > 4) {
+        hasMoved = true
+        ipcRenderer.send('drag:move', { mouseX: e.screenX, mouseY: e.screenY })
+      }
     }
-  }
 
-  function onMouseUp() {
-    document.removeEventListener('mousemove', onMouseMove)
-    document.removeEventListener('mouseup', onMouseUp)
-    if (!hasMoved) expandWidget() // 드래그 아닌 클릭 → 펼치기
-  }
+    function onMouseUp() {
+      document.removeEventListener('mousemove', onMouseMove)
+      document.removeEventListener('mouseup', onMouseUp)
+      if (!hasMoved) expandWidget()
+    }
 
-  document.addEventListener('mousemove', onMouseMove)
-  document.addEventListener('mouseup', onMouseUp)
-})
+    document.addEventListener('mousemove', onMouseMove)
+    document.addEventListener('mouseup', onMouseUp)
+  })
+}
+
+setupDragAndClick(characterCanvas)
+setupDragAndClick(speechBubble)
 
 // ======================================================
 // 접기 버튼 + 바깥 클릭 → collapse
@@ -199,7 +248,7 @@ document.addEventListener('mousedown', (e) => {
 // 입력창 이벤트
 // ======================================================
 todoInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') {
+  if (e.key === 'Enter' && !e.isComposing) {
     addTodo(todoInput.value)
     todoInput.value = ''
   }
@@ -223,6 +272,20 @@ function playAttentionAnimation() {
     badge.classList.remove('badge-flashing')
   }, 2500)
 }
+
+// ======================================================
+// 클릭 통과: 보이는 요소 위에서만 클릭 가능
+// ======================================================
+const interactiveEls = [speechBubble, characterCanvas, cardEl, headerCharCanvas.parentElement]
+
+interactiveEls.forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    ipcRenderer.send('mouse:enter-interactive')
+  })
+  el.addEventListener('mouseleave', () => {
+    ipcRenderer.send('mouse:leave-interactive')
+  })
+})
 
 // ======================================================
 // 시작

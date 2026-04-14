@@ -1,14 +1,8 @@
 /* ====== 폰트 등록 ====== */
 @font-face {
-  font-family: 'SOYO Maple';
-  src: url('assets/SOYO Maple Regular.otf');
+  font-family: 'omyu pretty';
+  src: url('assets/fonts/omyu pretty.ttf') format('truetype');
   font-weight: 400;
-}
-
-@font-face {
-  font-family: 'SOYO Maple';
-  src: url('assets/SOYO Maple Bold.otf');
-  font-weight: 700;
 }
 
 /* ====== 기본 리셋 ====== */
@@ -25,7 +19,7 @@ html, body {
   height: 100%;
   background: transparent;
   overflow: hidden;
-  font-family: 'SOYO Maple', -apple-system, sans-serif;
+  font-family: 'omyu pretty', sans-serif;
   font-weight: 400;
 }
 
@@ -33,10 +27,16 @@ html, body {
   display: none !important;
 }
 
+/* 터치 영역 커서 */
+#character-canvas,
+#speech-bubble {
+  cursor: pointer;
+}
+
 /* ====== COLLAPSED 상태 ====== */
 #collapsed-view {
-  width: 140px;
-  height: 140px;
+  width: 180px;
+  height: 180px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -53,9 +53,8 @@ html, body {
   border: 1px solid #D8D8D8;
   border-radius: 10px;
   padding: 5px 11px;
-  font-family: 'SOYO Maple', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 600;
   color: #1A1A1A;
   white-space: nowrap;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
@@ -93,21 +92,21 @@ html, body {
   justify-content: center;
 }
 
-#character {
+#character-canvas {
   display: block;
-  line-height: 0;
+  width: 99px;
+  height: 99px;
   filter: drop-shadow(0px 2px 6px rgba(0, 0, 0, 0.25));
 }
 
 /* 빨간 뱃지 */
 #badge {
   position: absolute;
-  top: 0px;
-  right: -8px;
+  top: 10px;
+  right: 4px;
   background: #E8000D;
   color: #FFFFFF;
-  font-size: 10px;
-  font-weight: 700;
+  font-size: 13px;
   min-width: 18px;
   height: 18px;
   border-radius: 9px;
@@ -132,6 +131,7 @@ html, body {
 #card {
   width: 260px;
   flex: 1;
+  min-height: 0;
   background-color: #F5F5F5;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Ccircle cx='8' cy='8' r='2' fill='%231A1A1A' fill-opacity='0.08'/%3E%3C/svg%3E");
   border: 1px solid #D8D8D8;
@@ -148,22 +148,22 @@ html, body {
 #card::before {
   content: '';
   position: absolute;
-  bottom: -7px;
-  right: 22px;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-top: 7px solid #D8D8D8;
+  bottom: -10px;
+  right: 45px;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 10px solid #D8D8D8;
 }
 
 /* 말풍선 꼬리 (채움) */
 #card::after {
   content: '';
   position: absolute;
-  bottom: -5px;
-  right: 23px;
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-top: 5px solid #F5F5F5;
+  bottom: -8px;
+  right: 46px;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 8px solid #F5F5F5;
   z-index: 2;
 }
 
@@ -180,8 +180,8 @@ html, body {
 }
 
 #card-title {
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 600;
   color: #1A1A1A;
 }
 
@@ -191,7 +191,7 @@ html, body {
   border: none;
   cursor: pointer;
   color: #BBBBBB;
-  font-size: 18px;
+  font-size: 23px;
   line-height: 1;
   padding: 0 2px;
   border-radius: 4px;
@@ -208,13 +208,15 @@ html, body {
 #expanded-bottom {
   display: flex;
   justify-content: flex-end;
-  padding-right: 16px;
+  padding-right: 41px;
   padding-top: 6px;
   flex-shrink: 0;
 }
 
-#header-char {
-  line-height: 0;
+#expanded-bottom canvas {
+  display: block;
+  width: 78px;
+  height: 78px;
   -webkit-app-region: no-drag;
   filter: drop-shadow(0px 2px 6px rgba(0, 0, 0, 0.25));
 }
@@ -222,8 +224,10 @@ html, body {
 /* 투두 목록 */
 #todo-list {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
+  -webkit-app-region: no-drag;
 }
 
 #todo-list::-webkit-scrollbar {
@@ -237,6 +241,7 @@ html, body {
 
 /* 투두 항목 */
 .todo-item {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -276,7 +281,7 @@ html, body {
 .todo-checkbox.checked::after {
   content: '✓';
   color: #FFFFFF;
-  font-size: 9px;
+  font-size: 12px;
   font-weight: bold;
   line-height: 1;
   margin-top: 1px;
@@ -285,7 +290,7 @@ html, body {
 /* 투두 텍스트 */
 .todo-text {
   flex: 1;
-  font-size: 12.5px;
+  font-size: 16px;
   color: #1A1A1A;
   line-height: 1.4;
   word-break: break-all;
@@ -300,17 +305,21 @@ html, body {
   opacity: 0.55;
 }
 
-/* 삭제 버튼 */
+/* 삭제 버튼 — 호버 시 겹쳐서 표시 */
 .todo-delete {
+  position: absolute;
+  right: 3px;
+  top: 50%;
+  transform: translateY(-50%);
   opacity: 0;
   cursor: pointer;
   color: #BBBBBB;
-  font-size: 15px;
+  font-size: 20px;
   line-height: 1;
   padding: 2px 4px;
   border-radius: 4px;
+  background: #F5F5F5;
   transition: opacity 0.15s, color 0.15s;
-  flex-shrink: 0;
   -webkit-app-region: no-drag;
 }
 
@@ -334,10 +343,10 @@ html, body {
   width: 100%;
   border: none;
   background: transparent;
-  font-size: 12px;
+  font-size: 16px;
   color: #1A1A1A;
   outline: none;
-  font-family: 'SOYO Maple', sans-serif;
+  font-family: inherit;
   -webkit-user-select: text;
   user-select: text;
 }
@@ -370,11 +379,11 @@ html, body {
   }
 }
 
-#header-char.char-appearing {
+#expanded-bottom.char-appearing {
   animation: char-spring-in 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
-#header-char.char-disappearing {
+#expanded-bottom.char-disappearing {
   animation: char-spring-out 0.24s cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards;
 }
 
