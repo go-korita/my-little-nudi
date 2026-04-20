@@ -3,11 +3,20 @@ const { ipcRenderer } = require('electron')
 // ======================================================
 // 갯민숭달팽이 캐릭터 — Rive 애니메이션
 // ======================================================
-const RIVE_FILE = 'assets/nudi-motion.riv'
+const RIVE_FILE_DEFAULT = 'assets/nudi-motion.riv'
+const RIVE_FILE_UPSET = 'assets/nudi-motion-upset.riv'
 
 // Rive 인스턴스 관리 (나중에 모션 2~3가지로 확장 예정)
 let collapsedRive = null  // collapsed 상태 캐릭터
 let expandedRive = null   // expanded 상태 캐릭터
+let currentRiveFile = RIVE_FILE_DEFAULT  // 현재 적용 중인 .riv 파일
+
+// ======================================================
+// Idle 감지 — 오래 안 누르면 upset 모션으로 교체
+// ======================================================
+const IDLE_TIMEOUT = 60 * 60 * 1000  // 1시간
+let idleTimer = null
+let isIdle = false
 
 /**
  * Rive 캐릭터를 캔버스에 로드
@@ -17,7 +26,7 @@ let expandedRive = null   // expanded 상태 캐릭터
  */
 function loadRiveCharacter(canvas, options = {}) {
   const config = {
-    src: RIVE_FILE,
+    src: options.src || currentRiveFile,
     canvas: canvas,
     autoplay: true,
     fit: rive.Fit.Contain,
@@ -286,6 +295,56 @@ interactiveEls.forEach(el => {
     ipcRenderer.send('mouse:leave-interactive')
   })
 })
+
+// ======================================================
+// Idle 감지 — .riv 파일 교체
+// ======================================================
+function switchRiveFile(riveFile) {
+  if (currentRiveFile === riveFile) return
+  currentRiveFile = riveFile
+
+  // collapsed 캐릭터 교체
+  if (collapsedRive) {
+    collapsedRive.cleanup()
+    collapsedRive = loadRiveCharacter(characterCanvas, {
+      src: riveFile,
+      stateMachine: 'State Machine 1'
+    })
+    if (isExpanded) collapsedRive.pause()
+  }
+
+  // expanded 캐릭터 교체
+  if (expandedRive) {
+    expandedRive.cleanup()
+    expandedRive = loadRiveCharacter(headerCharCanvas, {
+      src: riveFile,
+      stateMachine: 'State Machine 1'
+    })
+    if (!isExpanded) expandedRive.pause()
+  }
+}
+
+function goIdle() {
+  if (isIdle) return
+  isIdle = true
+  switchRiveFile(RIVE_FILE_UPSET)
+}
+
+function resetIdleTimer() {
+  if (isIdle) {
+    isIdle = false
+    switchRiveFile(RIVE_FILE_DEFAULT)
+  }
+  clearTimeout(idleTimer)
+  idleTimer = setTimeout(goIdle, IDLE_TIMEOUT)
+}
+
+// 사용자 상호작용 감지 → idle 타이머 리셋
+document.addEventListener('click', resetIdleTimer)
+document.addEventListener('keydown', resetIdleTimer)
+
+// 최초 타이머 시작
+resetIdleTimer()
 
 // ======================================================
 // 시작
