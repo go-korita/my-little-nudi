@@ -1,7 +1,7 @@
 const { ipcRenderer } = require('electron')
 
 // ======================================================
-// 갯민숭달팽이 캐릭터 — Rive 애니메이션
+// Nudi Todo 캐릭터 — Rive 애니메이션
 // ======================================================
 const RIVE_FILE_DEFAULT = 'assets/nudi-motion.riv'
 const RIVE_FILE_UPSET = 'assets/nudi-motion-upset.riv'
