@@ -81,7 +81,7 @@ async function init() {
   render()
 
   // 15초마다 어텐션 모션
-  setInterval(playAttentionAnimation, 10 * 1000)
+  setInterval(playAttentionAnimation, 180 * 1000)
 }
 
 // ======================================================
