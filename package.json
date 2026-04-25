@@ -9,7 +9,7 @@
   },
   "build": {
     "appId": "com.nudibranch.widget",
-    "productName": "NudiTodo",
+    "productName": "Nudi Todo",
     "mac": {
       "category": "public.app-category.productivity",
       "target": "dmg",
