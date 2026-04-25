@@ -227,9 +227,17 @@
     display: flex;
     gap: 1.1rem;
     align-items: center;
-    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    transition: box-shadow .2s ease, border-color .2s ease;
     overflow: hidden;
     box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+    animation: feat-float 3.5s ease-in-out infinite;
+  }
+  .feat-card:nth-child(2) {
+    animation-delay: 0.8s;
+  }
+  @keyframes feat-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
   }
   .feat-card::after {
     content: '';
@@ -242,7 +250,6 @@
     transition: opacity .2s ease;
   }
   .feat-card:hover {
-    transform: translateY(-6px);
     box-shadow: 0 14px 28px rgba(0, 0, 0, 0.10);
     border-color: #D0D0D0;
   }
@@ -744,7 +751,7 @@
   <h1 class="hero-title">내 모니터 속의<br>작은 달팽이</h1>
   <p class="hero-sub">쌓여만 가는 할일들, 잊지 않게 기억해 둘게요</p>
   <div>
-    <a href="https://github.com/go-korita/my-little-nudi/releases/download/v1.0.0/NudiTodo-1.0.0-arm64.dmg" class="dl-btn">
+    <a href="https://drive.google.com/uc?export=download&id=1CxyXQfDf0nmZVXk837bRemmdt76f_cca" class="dl-btn">
       <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 2v8M4.5 7l3 3 3-3M2.5 12.5h10" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
     내 모니터에 데려오기 — macOS
     </a>
@@ -837,7 +844,7 @@
 <section class="cta fade">
   <h2 class="cta-title">지금 모니터에<br>데려오세요!</h2>
   <p class="cta-sub">무료 · macOS 전용 · 설치 후 바로 사용</p>
-  <a href="https://github.com/go-korita/my-little-nudi/releases/download/v1.0.0/NudiTodo-1.0.0-arm64.dmg" class="dl-btn">
+  <a href="https://drive.google.com/uc?export=download&id=1CxyXQfDf0nmZVXk837bRemmdt76f_cca" class="dl-btn">
     <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 2v8M4.5 7l3 3 3-3M2.5 12.5h10" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
     내 모니터에 데려오기
   </a>
