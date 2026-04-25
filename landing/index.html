@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Little Nudi - 누디 투두</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  @font-face {
+    font-family: 'omupretty';
+    src: url('assets/fonts/omyu pretty.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'omyu pretty';
+    src: url('assets/fonts/omyu pretty.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #FAFAFA;
+    --card: #F5F5F5;
+    --border: #D8D8D8;
+    --ink: #1A1A1A;
+    --muted: #888;
+    --red: #E8000D;
+    --dot: rgba(26,26,26,0.07);
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'omupretty', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(circle, var(--dot) 2px, transparent 2px);
+    background-size: 16px 16px;
+    pointer-events: none;
+    z-index: 0;
+  }
+  section, header, footer { position: relative; z-index: 1; }
+
+  /* HEADER */
+  header {
+    padding: 1.4rem 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo {
+    font-family: 'omupretty', sans-serif;
+    font-size: 1.3rem;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .logo-nudi { width: 28px; height: 24px; }
+  .nav-pill {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 4px 12px;
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 5rem 2rem 4rem;
+    gap: 1.8rem;
+  }
+  .hero-char {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-top: 14px;
+    margin-bottom: 0.5rem;
+  }
+  .hero-bubble {
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    transform: translateX(-50%) translateY(-18px);
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 6px 16px;
+    font-family: 'omupretty', sans-serif;
+    font-size: 1rem;
+    color: var(--ink);
+    white-space: nowrap;
+    margin-bottom: 0;
+    z-index: 2;
+  }
+  .hero-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -10px; left: 50%;
+    transform: translateX(-50%);
+    width: 12px; height: 10px;
+    background: #fff;
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    z-index: 1;
+  }
+  .hero-bubble::before {
+    content: '';
+    position: absolute;
+    bottom: -12px; left: 50%;
+    transform: translateX(-50%);
+    width: 14px; height: 12px;
+    background: var(--border);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--red);
+    color: #fff;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 1px 5px;
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+  .hero-nudi {
+    width: 100px;
+    height: 90px;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.12));
+    animation: nudifloat 3.5s ease-in-out infinite;
+  }
+  @keyframes nudifloat {
+    0%,100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-12px) rotate(2deg); }
+  }
+  .hero-title {
+    font-family: 'omupretty', sans-serif;
+    font-size: clamp(3rem, 9vw, 6rem);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -1px;
+  }
+  .hero-sub {
+    font-family: 'omupretty', sans-serif;
+    font-size: 1rem;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+  .dl-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--ink);
+    color: #fff;
+    padding: 14px 30px;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: opacity .2s, transform .2s;
+    margin-top: 0.4rem;
+  }
+  .dl-btn:hover { opacity: 0.82; transform: translateY(-2px); }
+  .dl-note { font-size: 11px; color: var(--muted); margin-top: 0.6rem; }
+
+  /* FEATURES */
+  .features {
+    padding: 5rem 2rem;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  .sec-label {
+    font-family: 'omupretty', sans-serif;
+    font-size: 1rem;
+    color: var(--muted);
+    margin-bottom: 2.5rem;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+  }
+  .sec-label::before,
+  .sec-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .feat-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+  @media (max-width: 520px) {
+    .feat-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  .feat-card {
+    position: relative;
+    background: linear-gradient(155deg, #FFFFFF 0%, #F8F8F8 100%);
+    border: 1px solid #E8E8E8;
+    border-radius: 16px;
+    padding: 1.4rem 1.5rem;
+    display: flex;
+    gap: 1.1rem;
+    align-items: center;
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    overflow: hidden;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+  }
+  .feat-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .2s ease;
+  }
+  .feat-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.10);
+    border-color: #D0D0D0;
+  }
+  .feat-card:hover::after {
+    opacity: 1;
+  }
+  .feat-icon {
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    border: none;
+    transition: transform 0.2s ease;
+  }
+  .feat-card:hover .feat-icon {
+    transform: translateY(-1px);
+  }
+  .feat-icon svg {
+    width: 30px;
+    height: 30px;
+  }
+  .feat-icon img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+  }
+  .feat-title { font-weight: 600; font-size: 0.98rem; margin-bottom: 0.45rem; letter-spacing: -0.2px; }
+  .feat-desc { font-size: 0.86rem; color: var(--muted); line-height: 1.3; }
+
+  /* PREVIEW */
+  .preview {
+    padding: 5rem 2rem;
+    background: transparent;
+  }
+  .preview-inner { max-width: 780px; margin: 0 auto; }
+  .preview-stage {
+    margin-top: 2.2rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 36px;
+    flex-wrap: wrap;
+  }
+
+  .app-preview-shell {
+    --bubble-bg: #FFFFFF;
+    --bubble-border: #D8D8D8;
+    --bubble-tail-fill: #FFFFFF;
+    --bubble-text: #1A1A1A;
+    --bubble-shadow: rgba(0, 0, 0, 0.1);
+    --bubble-badge: #E8000D;
+    --card-bg: #F5F5F5;
+    --card-border: #D8D8D8;
+    --card-tail-fill: #F5F5F5;
+    --card-shadow: rgba(0, 0, 0, 0.14);
+    --card-title: #1A1A1A;
+    --dot-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Ccircle cx='8' cy='8' r='2' fill='%231A1A1A' fill-opacity='0.08'/%3E%3C/svg%3E");
+    --divider: #E2E2E2;
+    --todo-text: #1A1A1A;
+    --todo-done-text: #AAAAAA;
+    --todo-hover-bg: rgba(0, 0, 0, 0.04);
+    --checkbox-border: #BBBBBB;
+    --checkbox-hover-border: #888888;
+    --checkbox-checked-bg: #1A1A1A;
+    --checkbox-checked-border: #1A1A1A;
+    --checkbox-check-color: #FFFFFF;
+    --delete-color: #BBBBBB;
+    --delete-bg: #F5F5F5;
+    --delete-hover-color: #E8000D;
+    --delete-hover-bg: rgba(232, 0, 13, 0.07);
+    --input-text: #1A1A1A;
+    --input-placeholder: #C0C0C0;
+    --scrollbar-thumb: #C8C8C8;
+    --collapse-color: #BBBBBB;
+    --collapse-hover-color: #555555;
+    --collapse-hover-bg: rgba(0, 0, 0, 0.06);
+    --char-shadow: rgba(0, 0, 0, 0.25);
+    position: relative;
+    font-family: 'omyu pretty', sans-serif;
+  }
+
+  #app-preview-collapsed {
+    width: 180px;
+    height: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 6px;
+    gap: 6px;
+    cursor: default;
+    animation: app-preview-float 4s ease-in-out infinite;
+  }
+  #app-preview-speech-bubble {
+    position: relative;
+    background: var(--bubble-bg);
+    border: 1px solid var(--bubble-border);
+    border-radius: 10px;
+    padding: 5px 11px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--bubble-text);
+    white-space: nowrap;
+    box-shadow: 0 2px 6px var(--bubble-shadow);
+  }
+  #app-preview-speech-bubble::before {
+    content: '';
+    position: absolute;
+    bottom: -7px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 7px solid var(--bubble-border);
+  }
+  #app-preview-speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 5px solid var(--bubble-tail-fill);
+  }
+  #app-preview-badge {
+    position: absolute;
+    top: 10px;
+    right: 4px;
+    background: var(--bubble-badge);
+    color: #FFFFFF;
+    font-size: 13px;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    pointer-events: none;
+    padding: 0 4px;
+  }
+  #app-preview-character-area {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #app-preview-character {
+    display: block;
+    width: 99px;
+    height: 99px;
+    filter: drop-shadow(0 2px 6px var(--char-shadow));
+    animation: app-preview-float 4.2s ease-in-out infinite;
+  }
+
+  #app-preview-expanded {
+    width: 280px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    animation: app-preview-float 4.3s ease-in-out infinite 0.15s;
+  }
+  #app-preview-card {
+    width: 260px;
+    min-height: 0;
+    background-color: var(--card-bg);
+    background-image: var(--dot-pattern);
+    background-size: 16px 16px;
+    border: 1px solid var(--card-border);
+    border-radius: 18px;
+    padding: 14px 12px 24px;
+    box-shadow: 0 6px 24px var(--card-shadow);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  #app-preview-card::before {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    right: 45px;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 10px solid var(--card-border);
+  }
+  #app-preview-card::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    right: 46px;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 8px solid var(--card-tail-fill);
+    z-index: 2;
+  }
+  #app-preview-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--divider);
+    margin-bottom: 6px;
+  }
+  #app-preview-card-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--card-title);
+    line-height: 1;
+  }
+  #app-preview-collapse {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--collapse-color);
+    font-size: 23px;
+    line-height: 1;
+    padding: 0 2px;
+    border-radius: 4px;
+    transition: color 0.15s, background 0.15s;
+  }
+  #app-preview-collapse:hover {
+    color: var(--collapse-hover-color);
+    background: var(--collapse-hover-bg);
+  }
+  #app-preview-todo-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-right: 4px;
+  }
+  #app-preview-todo-list::-webkit-scrollbar {
+    width: 3px;
+  }
+  #app-preview-todo-list::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 2px;
+  }
+  .app-preview-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 3px;
+    border-radius: 6px;
+    transition: background 0.15s;
+  }
+  .app-preview-item:hover {
+    background: var(--todo-hover-bg);
+  }
+  .app-preview-checkbox {
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid var(--checkbox-border);
+    border-radius: 4px;
+    cursor: pointer;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.18s, border-color 0.18s;
+    font-size: 12px;
+    line-height: 1;
+    margin-top: 1px;
+  }
+  .app-preview-checkbox.checked {
+    background: var(--checkbox-checked-bg);
+    border-color: var(--checkbox-checked-border);
+    color: var(--checkbox-check-color);
+  }
+  .app-preview-text {
+    flex: 1;
+    font-size: 16px;
+    color: var(--todo-text);
+    line-height: 1.4;
+    word-break: break-all;
+  }
+  .app-preview-text.done {
+    text-decoration: line-through;
+    color: var(--todo-done-text);
+    opacity: 0.55;
+  }
+  .app-preview-delete {
+    position: absolute;
+    right: 3px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    cursor: pointer;
+    color: var(--delete-color);
+    font-size: 20px;
+    line-height: 1;
+    padding: 2px 4px;
+    border-radius: 4px;
+    background: var(--delete-bg);
+    transition: opacity 0.15s, color 0.15s;
+  }
+  .app-preview-item:hover .app-preview-delete {
+    opacity: 1;
+  }
+  .app-preview-delete:hover {
+    color: var(--delete-hover-color);
+    background: var(--delete-hover-bg);
+  }
+  #app-preview-input-area {
+    border-top: 1px solid var(--divider);
+    padding-top: 8px;
+    margin-top: 4px;
+  }
+  #app-preview-input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    color: var(--input-text);
+    outline: none;
+    font-family: inherit;
+  }
+  #app-preview-input::placeholder {
+    color: var(--input-placeholder);
+  }
+  #app-preview-expanded-bottom {
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 30px;
+    padding-top: 28px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 3;
+  }
+  #app-preview-expanded-char {
+    display: block;
+    width: 52px;
+    height: 52px;
+    filter: drop-shadow(0 2px 6px var(--char-shadow));
+  }
+
+  @keyframes app-preview-float {
+    0%,100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-12px) rotate(2deg); }
+  }
+
+  /* CTA */
+  .cta {
+    padding: 7rem 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .cta-nudi {
+    width: 72px; height: 65px;
+    animation: ctabounce 1s ease-in-out infinite;
+  }
+  @keyframes ctabounce {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .cta-title {
+    font-family: 'omupretty', sans-serif;
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 600;
+    line-height: 1.2;
+  }
+  .cta-sub { font-size: 0.88rem; color: var(--muted); }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 1.5rem 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .footer-logo { font-family: 'omupretty', sans-serif; font-size: 1.1rem; }
+  .footer-note { font-size: 11px; color: var(--muted); }
+
+  /* darkmode toggle */
+  #darkmode-toggle {
+    position: relative;
+    width: 52px;
+    height: 28px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: #E8E8E8;
+    cursor: pointer;
+    margin-left: 12px;
+    padding: 0;
+    flex-shrink: 0;
+    transition: background 0.3s;
+  }
+  #darkmode-toggle.dark {
+    background: #3A3A3C;
+    border-color: #555;
+  }
+  .toggle-knob {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    transition: transform 0.3s;
+  }
+  #darkmode-toggle.dark .toggle-knob {
+    transform: translateX(24px);
+    background: #1C1C1E;
+  }
+  .toggle-icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    line-height: 1;
+    transition: opacity 0.3s;
+  }
+  .toggle-icon.sun {
+    left: 6px;
+    opacity: 1;
+  }
+  .toggle-icon.moon {
+    right: 6px;
+    opacity: 0.4;
+  }
+  #darkmode-toggle.dark .toggle-icon.sun {
+    opacity: 0.4;
+  }
+  #darkmode-toggle.dark .toggle-icon.moon {
+    opacity: 1;
+  }
+
+  /* preview dark mode */
+  .app-preview-shell.dark {
+    --bubble-bg: #2C2C2E;
+    --bubble-border: #48484A;
+    --bubble-tail-fill: #2C2C2E;
+    --bubble-text: #E5E5EA;
+    --bubble-shadow: rgba(0, 0, 0, 0.3);
+    --bubble-badge: #E8000D;
+    --card-bg: #2C2C2E;
+    --card-border: #48484A;
+    --card-tail-fill: #2C2C2E;
+    --card-shadow: rgba(0, 0, 0, 0.4);
+    --card-title: #E5E5EA;
+    --dot-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Ccircle cx='8' cy='8' r='2' fill='%23FFFFFF' fill-opacity='0.06'/%3E%3C/svg%3E");
+    --divider: #48484A;
+    --todo-text: #E5E5EA;
+    --todo-done-text: #636366;
+    --todo-hover-bg: rgba(255, 255, 255, 0.06);
+    --checkbox-border: #636366;
+    --checkbox-hover-border: #8E8E93;
+    --checkbox-checked-bg: #E5E5EA;
+    --checkbox-checked-border: #E5E5EA;
+    --checkbox-check-color: #1C1C1E;
+    --delete-color: #636366;
+    --delete-bg: #3A3A3C;
+    --delete-hover-color: #FF453A;
+    --delete-hover-bg: rgba(255, 69, 58, 0.15);
+    --input-text: #E5E5EA;
+    --input-placeholder: #636366;
+    --scrollbar-thumb: #48484A;
+    --collapse-color: #636366;
+    --collapse-hover-color: #AEAEB2;
+    --collapse-hover-bg: rgba(255, 255, 255, 0.08);
+    --char-shadow: rgba(0, 0, 0, 0.5);
+  }
+
+  /* fade in */
+  .fade { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
+  .fade.on { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <svg class="logo-nudi" viewBox="0 0 42 38" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#a)"><path d="M34.3745 22.2892C34.4083 21.9372 34.5769 21.6182 34.9817 21.3542C35.5101 21.0133 36.2409 20.9473 36.9043 21.0353C38.3097 21.2223 39.5128 22.0252 39.9513 23.2021C40.1087 23.609 40.1537 24.038 40.0974 24.4559C40.0412 24.8079 39.8838 25.1379 39.6702 25.4238C39.5578 25.5668 39.4228 25.6878 39.2992 25.8308C39.2317 25.9188 39.153 26.0618 39.2992 26.1278C40.8283 26.9087 41.4242 28.4485 40.6821 30.0214C39.3104 32.8921 33.194 32.3312 32.0809 30.2964C31.7773 29.7354 32.3957 29.1855 32.8229 28.8555C33.3514 28.4265 34.1047 28.1186 34.5657 27.6346C34.7905 27.3926 34.9479 27.1177 35.0266 26.8207C35.1616 26.3697 35.1503 25.8968 35.0829 25.4348C35.0042 24.8409 34.8692 24.258 34.6556 23.686C34.487 23.2241 34.3183 22.7511 34.3633 22.3002L34.3745 22.2892Z" fill="#262626"/><path d="M12.4651 6.81537C19.6856 4.6912 28.2573 6.71765 33.232 12.8917C41.1171 23.2544 35.9692 34.2212 23.8949 34.7671C16.03 35.1145 4.63045 36.1568 1.01521 27.6998C-2.60003 19.2428 3.97588 9.09836 12.2839 6.865L12.4651 6.80545V6.81537Z" fill="#FFFDF0"/><path d="M3.46991 24.09C10.0999 26.42 21.3599 26.46 30.3299 23.59C33.6599 22.52 34.4499 26.79 33.6699 28.55C31.0899 34.37 8.46991 35.01 3.29991 28.87C1.68991 26.95 1.38991 23.36 3.46991 24.09Z" fill="#FAF8E9"/><path d="M32.8798 16.53C35.3498 15.74 35.6798 19.69 33.0398 19.27C31.5998 19.04 31.7498 16.89 32.8798 16.53Z" fill="#262626"/><path d="M32.77 28.37C30.57 29.57 29.52 26.16 32.1 25.99C33.51 25.9 33.77 27.83 32.77 28.37Z" fill="#262626"/><path d="M1.97988 23.6699C4.28988 22.9299 4.59988 26.6299 2.12988 26.2399C0.779877 26.0299 0.919877 24.0099 1.97988 23.6699Z" fill="#262626"/><path d="M9.61993 10.84C11.1599 12.47 7.51993 14.9 7.01993 12.28C6.73993 10.83 8.62993 9.8 9.61993 10.84Z" fill="#262626"/><path d="M14.79 32.13C14.48 33.97 11.04 32.77 12.53 31.13C13.36 30.22 14.99 30.96 14.79 32.13Z" fill="#262626"/><path d="M28.32 11.5599C27.98 13.5699 24.23 12.2599 25.85 10.4699C26.75 9.47993 28.54 10.2799 28.32 11.5599Z" fill="#262626"/><path d="M20.3601 19.74C21.7501 16.68 25.3101 19.17 24.0301 21.91C22.5801 24.6 19.3501 22.42 20.3301 19.82L20.3601 19.74ZM7.57011 19.38C8.04011 18.26 9.21011 17.66 10.1701 18.26C11.5001 19.09 11.4301 21.32 10.3301 22.32L10.2701 22.38C8.38011 23.96 6.65011 21.24 7.56011 19.38H7.57011Z" fill="#262626"/><path d="M15.0002 22.3201C15.3302 22.3201 15.6002 22.5901 15.6002 22.9201C15.6002 23.0101 15.6602 23.2601 15.8402 23.4801C16.0002 23.6901 16.2202 23.8201 16.5002 23.8201C16.8302 23.8201 17.1002 24.0901 17.1002 24.4201C17.1002 24.7501 16.8302 25.0201 16.5002 25.0201C15.8302 25.0201 15.3202 24.7001 14.9902 24.3201C14.7602 24.5201 14.5202 24.6601 14.3202 24.7601C14.1302 24.8501 13.9702 24.9101 13.8502 24.9501C13.7902 24.9701 13.7402 24.9801 13.7002 24.9901C13.6802 24.9901 13.6702 24.9901 13.6502 25.0001H13.6402C13.3202 25.0701 13.0002 24.8601 12.9302 24.5301C12.8602 24.2101 13.0702 23.8901 13.4002 23.8201C13.4002 23.8201 13.4002 23.8201 13.4202 23.8201C13.4402 23.8201 13.4702 23.8101 13.5002 23.8001C13.5802 23.7801 13.6902 23.7401 13.8102 23.6801C14.0302 23.5701 14.2702 23.4101 14.4502 23.1901C14.4302 23.1001 14.4202 23.0101 14.4202 22.9201C14.4202 22.5901 14.6902 22.3201 15.0202 22.3201H15.0002Z" fill="#262626"/><path d="M23.573 1.03C22.353 1 21.223 1.82 20.453 2.87C19.173 4.64 18.133 7.87 20.073 9.51C20.923 10.23 22.143 10.58 23.233 10.51C25.483 10.39 26.563 7.58 26.683 5.51C26.733 4.63 26.653 3.69 26.283 2.89C25.893 2.02 25.123 1.37 24.263 1.11C24.033 1.05 23.803 1.01 23.573 1V1.03Z" fill="#262626"/><path d="M13.58 0.149946C12.39 0.549946 11.6 1.70995 11.22 2.96995C10.6 5.07995 10.73 8.48995 13.16 9.36995C14.23 9.75995 15.53 9.65995 16.55 9.21995C18.67 8.32995 18.74 5.29995 18.13 3.29995C17.87 2.44995 17.47 1.58995 16.84 0.969947C16.17 0.299946 15.2 -0.0500535 14.28 -5.35254e-05C14.04 0.0199465 13.8 0.0599465 13.58 0.139946V0.149946Z" fill="#262626"/><path d="M23.9059 5.82411C24.8559 8.36411 20.8259 9.79411 21.0059 6.53411C21.1359 5.12411 23.1359 4.33411 23.8659 5.73411L23.9059 5.81411V5.82411Z" fill="#E4E4E4"/><path d="M15.2001 7.79994C15.9801 7.74994 16.5601 6.99994 16.5001 6.13994C16.4401 5.27994 15.7601 4.61994 14.9901 4.67994C14.2101 4.72994 13.6301 5.47994 13.6901 6.33994C13.7501 7.19994 14.4301 7.85994 15.2001 7.79994Z" fill="#E4E4E4"/></g><defs><clipPath id="a"><rect width="42" height="38" fill="white"/></clipPath></defs></svg>
+    My Little Nudi - 누디 투두
+  </div>
+  <span class="nav-pill">macOS</span>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-char">
+    <div class="hero-bubble">할 일 3개 <span class="badge">3</span></div>
+    <svg class="hero-nudi" viewBox="0 0 42 38" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#b)"><path d="M34.3745 22.2892C34.4083 21.9372 34.5769 21.6182 34.9817 21.3542C35.5101 21.0133 36.2409 20.9473 36.9043 21.0353C38.3097 21.2223 39.5128 22.0252 39.9513 23.2021C40.1087 23.609 40.1537 24.038 40.0974 24.4559C40.0412 24.8079 39.8838 25.1379 39.6702 25.4238C39.5578 25.5668 39.4228 25.6878 39.2992 25.8308C39.2317 25.9188 39.153 26.0618 39.2992 26.1278C40.8283 26.9087 41.4242 28.4485 40.6821 30.0214C39.3104 32.8921 33.194 32.3312 32.0809 30.2964C31.7773 29.7354 32.3957 29.1855 32.8229 28.8555C33.3514 28.4265 34.1047 28.1186 34.5657 27.6346C34.7905 27.3926 34.9479 27.1177 35.0266 26.8207C35.1616 26.3697 35.1503 25.8968 35.0829 25.4348C35.0042 24.8409 34.8692 24.258 34.6556 23.686C34.487 23.2241 34.3183 22.7511 34.3633 22.3002L34.3745 22.2892Z" fill="#262626"/><path d="M12.4651 6.81537C19.6856 4.6912 28.2573 6.71765 33.232 12.8917C41.1171 23.2544 35.9692 34.2212 23.8949 34.7671C16.03 35.1145 4.63045 36.1568 1.01521 27.6998C-2.60003 19.2428 3.97588 9.09836 12.2839 6.865L12.4651 6.80545V6.81537Z" fill="#FFFDF0"/><path d="M3.46991 24.09C10.0999 26.42 21.3599 26.46 30.3299 23.59C33.6599 22.52 34.4499 26.79 33.6699 28.55C31.0899 34.37 8.46991 35.01 3.29991 28.87C1.68991 26.95 1.38991 23.36 3.46991 24.09Z" fill="#FAF8E9"/><path d="M32.8798 16.53C35.3498 15.74 35.6798 19.69 33.0398 19.27C31.5998 19.04 31.7498 16.89 32.8798 16.53Z" fill="#262626"/><path d="M32.77 28.37C30.57 29.57 29.52 26.16 32.1 25.99C33.51 25.9 33.77 27.83 32.77 28.37Z" fill="#262626"/><path d="M1.97988 23.6699C4.28988 22.9299 4.59988 26.6299 2.12988 26.2399C0.779877 26.0299 0.919877 24.0099 1.97988 23.6699Z" fill="#262626"/><path d="M9.61993 10.84C11.1599 12.47 7.51993 14.9 7.01993 12.28C6.73993 10.83 8.62993 9.8 9.61993 10.84Z" fill="#262626"/><path d="M14.79 32.13C14.48 33.97 11.04 32.77 12.53 31.13C13.36 30.22 14.99 30.96 14.79 32.13Z" fill="#262626"/><path d="M28.32 11.5599C27.98 13.5699 24.23 12.2599 25.85 10.4699C26.75 9.47993 28.54 10.2799 28.32 11.5599Z" fill="#262626"/><path d="M20.3601 19.74C21.7501 16.68 25.3101 19.17 24.0301 21.91C22.5801 24.6 19.3501 22.42 20.3301 19.82L20.3601 19.74ZM7.57011 19.38C8.04011 18.26 9.21011 17.66 10.1701 18.26C11.5001 19.09 11.4301 21.32 10.3301 22.32L10.2701 22.38C8.38011 23.96 6.65011 21.24 7.56011 19.38H7.57011Z" fill="#262626"/><path d="M15.0002 22.3201C15.3302 22.3201 15.6002 22.5901 15.6002 22.9201C15.6002 23.0101 15.6602 23.2601 15.8402 23.4801C16.0002 23.6901 16.2202 23.8201 16.5002 23.8201C16.8302 23.8201 17.1002 24.0901 17.1002 24.4201C17.1002 24.7501 16.8302 25.0201 16.5002 25.0201C15.8302 25.0201 15.3202 24.7001 14.9902 24.3201C14.7602 24.5201 14.5202 24.6601 14.3202 24.7601C14.1302 24.8501 13.9702 24.9101 13.8502 24.9501C13.7902 24.9701 13.7402 24.9801 13.7002 24.9901C13.6802 24.9901 13.6702 24.9901 13.6502 25.0001H13.6402C13.3202 25.0701 13.0002 24.8601 12.9302 24.5301C12.8602 24.2101 13.0702 23.8901 13.4002 23.8201C13.4002 23.8201 13.4002 23.8201 13.4202 23.8201C13.4402 23.8201 13.4702 23.8101 13.5002 23.8001C13.5802 23.7801 13.6902 23.7401 13.8102 23.6801C14.0302 23.5701 14.2702 23.4101 14.4502 23.1901C14.4302 23.1001 14.4202 23.0101 14.4202 22.9201C14.4202 22.5901 14.6902 22.3201 15.0202 22.3201H15.0002Z" fill="#262626"/><path d="M23.573 1.03C22.353 1 21.223 1.82 20.453 2.87C19.173 4.64 18.133 7.87 20.073 9.51C20.923 10.23 22.143 10.58 23.233 10.51C25.483 10.39 26.563 7.58 26.683 5.51C26.733 4.63 26.653 3.69 26.283 2.89C25.893 2.02 25.123 1.37 24.263 1.11C24.033 1.05 23.803 1.01 23.573 1V1.03Z" fill="#262626"/><path d="M13.58 0.149946C12.39 0.549946 11.6 1.70995 11.22 2.96995C10.6 5.07995 10.73 8.48995 13.16 9.36995C14.23 9.75995 15.53 9.65995 16.55 9.21995C18.67 8.32995 18.74 5.29995 18.13 3.29995C17.87 2.44995 17.47 1.58995 16.84 0.969947C16.17 0.299946 15.2 -0.0500535 14.28 -5.35254e-05C14.04 0.0199465 13.8 0.0599465 13.58 0.139946V0.149946Z" fill="#262626"/><path d="M23.9059 5.82411C24.8559 8.36411 20.8259 9.79411 21.0059 6.53411C21.1359 5.12411 23.1359 4.33411 23.8659 5.73411L23.9059 5.81411V5.82411Z" fill="#E4E4E4"/><path d="M15.2001 7.79994C15.9801 7.74994 16.5601 6.99994 16.5001 6.13994C16.4401 5.27994 15.7601 4.61994 14.9901 4.67994C14.2101 4.72994 13.6301 5.47994 13.6901 6.33994C13.7501 7.19994 14.4301 7.85994 15.2001 7.79994Z" fill="#E4E4E4"/></g><defs><clipPath id="b"><rect width="42" height="38" fill="white"/></clipPath></defs></svg>
+  </div>
+  <h1 class="hero-title">내 모니터 속의<br>작은 달팽이</h1>
+  <p class="hero-sub">쌓여만 가는 할일들, 잊지 않게 기억해 둘게요</p>
+  <div>
+    <a href="https://github.com/go-korita/my-little-nudi/releases/download/v1.0.0/NudiTodo-1.0.0-arm64.dmg" class="dl-btn">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 2v8M4.5 7l3 3 3-3M2.5 12.5h10" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    내 모니터에 데려오기 — macOS
+    </a>
+    <p class="dl-note">macOS 12 이상 · 무료</p>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features fade">
+  <div class="sec-label">바다 토끼 누디가<br>모니터 속에 놀러왔어요!</div>
+  <div class="feat-grid">
+
+    <div class="feat-card">
+      <img class="feat-icon" src="assets/sample-idle.png" alt="까먹지 않게 통통" />
+      <div>
+        <div class="feat-title">까먹지 않게 통통</div>
+        <div class="feat-desc">누디가 통통 튀어요.<br>할 일을 잊지 않도록!</div>
+      </div>
+    </div>
+
+    <div class="feat-card">
+      <img class="feat-icon" src="assets/sample-upset.png" alt="보지 않으면 씩씩" />
+      <div>
+        <div class="feat-title">보지 않으면 씩씩</div>
+        <div class="feat-desc">관심을 주지 않으면<br>가끔은 삐져있을지 몰라요</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PREVIEW -->
+<section class="preview fade">
+  <div class="preview-inner">
+    <div class="sec-label">할 일들을 잊지 않게 쌓아요!
+      <button id="darkmode-toggle" type="button" aria-label="다크모드 전환">
+        <span class="toggle-icon sun">&#9788;</span>
+        <span class="toggle-icon moon">&#9790;</span>
+        <span class="toggle-knob"></span>
+      </button>
+    </div>
+    <div class="preview-stage">
+      <div class="app-preview-shell">
+        <div id="app-preview-expanded">
+          <div id="app-preview-card">
+            <div id="app-preview-card-header">
+              <span id="app-preview-card-title">오늘 할 일</span>
+              <button id="app-preview-collapse" type="button" aria-label="접기">−</button>
+            </div>
+            <div id="app-preview-todo-list">
+              <div class="app-preview-item">
+                <span class="app-preview-checkbox checked">✓</span>
+                <span class="app-preview-text done">오전 스탠드업</span>
+              <span class="app-preview-delete">×</span>
+              </div>
+              <div class="app-preview-item">
+                <span class="app-preview-checkbox"></span>
+                <span class="app-preview-text">기획서 2차 수정</span>
+                <span class="app-preview-delete">×</span>
+              </div>
+              <div class="app-preview-item">
+                <span class="app-preview-checkbox"></span>
+                <span class="app-preview-text">팀장님 일정 컨펌</span>
+                <span class="app-preview-delete">×</span>
+              </div>
+              <div class="app-preview-item">
+                <span class="app-preview-checkbox checked">✓</span>
+                <span class="app-preview-text done">치과 예약하기</span>
+                <span class="app-preview-delete">×</span>
+              </div>
+              <div class="app-preview-item">
+                <span class="app-preview-checkbox"></span>
+                <span class="app-preview-text">광고 세팅 요청</span>
+                <span class="app-preview-delete">×</span>
+              </div>
+            </div>
+            <div id="app-preview-input-area">
+              <input id="app-preview-input" placeholder="빠르게 추가..." value="" aria-label="빠르게 추가">
+            </div>
+          </div>
+          <div id="app-preview-expanded-bottom">
+            <img id="app-preview-expanded-char" src="assets/img-nudi-idle.png" alt="nudi">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- CTA -->
+<section class="cta fade">
+  <h2 class="cta-title">지금 모니터에<br>데려오세요!</h2>
+  <p class="cta-sub">무료 · macOS 전용 · 설치 후 바로 사용</p>
+  <a href="https://github.com/go-korita/my-little-nudi/releases/download/v1.0.0/NudiTodo-1.0.0-arm64.dmg" class="dl-btn">
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 2v8M4.5 7l3 3 3-3M2.5 12.5h10" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    내 모니터에 데려오기
+  </a>
+</section>
+
+<footer>
+  <span class="footer-logo">My Little Nudi - 누디 투두</span>
+  <span class="footer-note">macOS 12 Monterey 이상 · Apple Silicon & Intel 지원</span>
+</footer>
+
+<script>
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('on'); });
+}, { threshold: 0.12 });
+document.querySelectorAll('.fade').forEach(el => io.observe(el));
+
+const toggle = document.getElementById('darkmode-toggle');
+const shell = document.querySelector('.app-preview-shell');
+toggle.addEventListener('click', () => {
+  toggle.classList.toggle('dark');
+  shell.classList.toggle('dark');
+});
+
+document.querySelectorAll('.dl-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      e.preventDefault();
+      alert('macOS 전용 앱이에요!\n컴퓨터에서 다운로드해주세요 :)');
+    }
+  });
+});
+</script>
+
+</body>
+</html>
