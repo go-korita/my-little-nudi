@@ -565,3 +565,19 @@ html, body {
 .badge-flashing {
   animation: badge-flash 2.4s ease-in-out;
 }
+
+/* ====== 화난(idle) 상태 통통 바운스 ====== */
+@keyframes upset-bounce {
+  0%   { transform: translateY(0); }
+  8%   { transform: translateY(-6px); }
+  16%  { transform: translateY(0); }
+  24%  { transform: translateY(-6px); }
+  32%  { transform: translateY(0); }
+  40%  { transform: translateY(-4px); }
+  48%  { transform: translateY(0); }
+  100% { transform: translateY(0); }
+}
+
+.upset-bounce {
+  animation: upset-bounce 2.4s ease-in-out;
+}

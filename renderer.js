@@ -16,6 +16,7 @@ let currentRiveFile = RIVE_FILE_DEFAULT  // 현재 적용 중인 .riv 파일
 // ======================================================
 const IDLE_TIMEOUT = 60 * 60 * 1000  // 1시간
 let idleTimer = null
+let upsetBounceInterval = null
 let isIdle = false
 
 /**
@@ -324,16 +325,27 @@ function switchRiveFile(riveFile) {
   }
 }
 
+function playUpsetBounce() {
+  if (isExpanded) return
+  collapsedView.classList.remove('upset-bounce')
+  void collapsedView.offsetWidth  // 애니메이션 리셋용
+  collapsedView.classList.add('upset-bounce')
+}
+
 function goIdle() {
   if (isIdle) return
   isIdle = true
   switchRiveFile(RIVE_FILE_UPSET)
+  playUpsetBounce()
+  upsetBounceInterval = setInterval(playUpsetBounce, 15 * 1000)  // 15초마다 1회
 }
 
 function resetIdleTimer() {
   if (isIdle) {
     isIdle = false
     switchRiveFile(RIVE_FILE_DEFAULT)
+    collapsedView.classList.remove('upset-bounce')
+    clearInterval(upsetBounceInterval)
   }
   clearTimeout(idleTimer)
   idleTimer = setTimeout(goIdle, IDLE_TIMEOUT)
