@@ -58,6 +58,7 @@ function loadRiveCharacter(canvas, options = {}) {
 // 상태
 // ======================================================
 let isExpanded = false
+let isWeekly = false
 
 // ======================================================
 // DOM 참조
@@ -234,6 +235,31 @@ function collapseWidget() {
 }
 
 // ======================================================
+// 상태 전환: expanded → weekly
+// ======================================================
+function expandWeekly() {
+  isWeekly = true
+  expandedView.classList.add('hidden')
+  weeklyView.classList.remove('hidden')
+  ipcRenderer.send('window:weekly-expand')
+
+  if (expandedRive) expandedRive.pause()
+
+  renderWeekly()
+}
+
+function collapseWeekly() {
+  isWeekly = false
+  weeklyView.classList.add('hidden')
+  expandedView.classList.remove('hidden')
+  ipcRenderer.send('window:weekly-collapse')
+
+  if (expandedRive) expandedRive.play()
+
+  render()
+}
+
+// ======================================================
 // Collapsed 상태 드래그 (클릭과 구분)
 // 캐릭터 캔버스 + 말풍선만 터치 영역
 // ======================================================
@@ -270,8 +296,14 @@ setupDragAndClick(speechBubble)
 // 접기 버튼 + 바깥 클릭 → collapse
 // ======================================================
 collapseBtn.addEventListener('click', collapseWidget)
+weeklyBtn.addEventListener('click', expandWeekly)
+weeklyCollapseBtn.addEventListener('click', collapseWeekly)
 
 document.addEventListener('mousedown', (e) => {
+  if (isWeekly && !e.target.closest('#weekly-view')) {
+    collapseWeekly()
+    return
+  }
   if (isExpanded && !e.target.closest('#card')) {
     collapseWidget()
   }
@@ -309,7 +341,7 @@ function playAttentionAnimation() {
 // ======================================================
 // 클릭 통과: 보이는 요소 위에서만 클릭 가능
 // ======================================================
-const interactiveEls = [speechBubble, characterCanvas, cardEl, headerCharCanvas.parentElement]
+const interactiveEls = [speechBubble, characterCanvas, cardEl, headerCharCanvas.parentElement, weeklyView]
 
 interactiveEls.forEach(el => {
   el.addEventListener('mouseenter', () => {
