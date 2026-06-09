@@ -296,6 +296,7 @@ function createWeeklyTodoElement(todo, dayKey, index) {
   const del = document.createElement('span')
   del.className = 'todo-delete'
   del.textContent = '×'
+  del.title = '삭제'
   del.addEventListener('click', () => deleteWeeklyTodo(dayKey, index))
 
   item.appendChild(checkbox)
@@ -340,7 +341,8 @@ function moveWeeklyTodo(fromDay, fromIndex, toDay) {
   weeklyTodos[toDay].push(todo)
   saveWeeklyTodos()
   renderWeekly()
-  render()
+  const today = todayKey()
+  if (fromDay === today || toDay === today) render()
 }
 
 function addWeeklyTodo(dayKey, text) {
@@ -350,6 +352,8 @@ function addWeeklyTodo(dayKey, text) {
   saveWeeklyTodos()
   renderWeekly()
   if (dayKey === todayKey()) render()
+  const input = weeklyColumns.querySelector(`.weekly-todo-input[data-day="${dayKey}"]`)
+  if (input) input.focus()
 }
 
 function toggleWeeklyTodo(dayKey, index) {
@@ -547,7 +551,7 @@ function switchRiveFile(riveFile) {
 }
 
 function playUpsetBounce() {
-  if (isExpanded) return
+  if (isExpanded || isWeekly) return
   collapsedView.classList.remove('upset-bounce')
   void collapsedView.offsetWidth  // 애니메이션 리셋용
   collapsedView.classList.add('upset-bounce')
