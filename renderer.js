@@ -261,6 +261,171 @@ function collapseWeekly() {
 }
 
 // ======================================================
+// 주간 뷰 렌더링
+// ======================================================
+function getWeekDates() {
+  const today = new Date()
+  const dow = today.getDay() // 0=일, 1=월, ...
+  const monday = new Date(today)
+  monday.setDate(today.getDate() - (dow === 0 ? 6 : dow - 1))
+
+  const dates = {}
+  DAY_KEYS.forEach((key, i) => {
+    const d = new Date(monday)
+    d.setDate(monday.getDate() + i)
+    dates[key] = d.getDate()
+  })
+  return dates
+}
+
+function createWeeklyTodoElement(todo, dayKey, index) {
+  const item = document.createElement('div')
+  item.className = 'todo-item weekly-todo-item'
+  item.draggable = true
+  item.dataset.day = dayKey
+  item.dataset.index = String(index)
+
+  const checkbox = document.createElement('div')
+  checkbox.className = `todo-checkbox${todo.done ? ' checked' : ''}`
+  checkbox.addEventListener('click', () => toggleWeeklyTodo(dayKey, index))
+
+  const text = document.createElement('span')
+  text.className = `todo-text${todo.done ? ' done' : ''}`
+  text.textContent = todo.text
+
+  const del = document.createElement('span')
+  del.className = 'todo-delete'
+  del.textContent = '×'
+  del.addEventListener('click', () => deleteWeeklyTodo(dayKey, index))
+
+  item.appendChild(checkbox)
+  item.appendChild(text)
+  item.appendChild(del)
+
+  item.addEventListener('dragstart', (e) => {
+    e.dataTransfer.setData('text/plain', JSON.stringify({ day: dayKey, index }))
+    item.classList.add('dragging')
+    e.stopPropagation()
+  })
+  item.addEventListener('dragend', () => {
+    item.classList.remove('dragging')
+  })
+
+  return item
+}
+
+function setupDropZone(el, dayKey) {
+  el.addEventListener('dragover', (e) => {
+    e.preventDefault()
+    el.classList.add('drag-over')
+  })
+  el.addEventListener('dragleave', (e) => {
+    if (!el.contains(e.relatedTarget)) {
+      el.classList.remove('drag-over')
+    }
+  })
+  el.addEventListener('drop', (e) => {
+    e.preventDefault()
+    el.classList.remove('drag-over')
+    const raw = e.dataTransfer.getData('text/plain')
+    if (!raw) return
+    const { day: fromDay, index: fromIndex } = JSON.parse(raw)
+    if (fromDay === dayKey) return
+    moveWeeklyTodo(fromDay, fromIndex, dayKey)
+  })
+}
+
+function moveWeeklyTodo(fromDay, fromIndex, toDay) {
+  const todo = weeklyTodos[fromDay].splice(fromIndex, 1)[0]
+  weeklyTodos[toDay].push(todo)
+  saveWeeklyTodos()
+  renderWeekly()
+  render()
+}
+
+function addWeeklyTodo(dayKey, text) {
+  const trimmed = text.trim()
+  if (!trimmed) return
+  weeklyTodos[dayKey].push({ id: Date.now(), text: trimmed, done: false })
+  saveWeeklyTodos()
+  renderWeekly()
+  if (dayKey === todayKey()) render()
+}
+
+function toggleWeeklyTodo(dayKey, index) {
+  weeklyTodos[dayKey][index].done = !weeklyTodos[dayKey][index].done
+  saveWeeklyTodos()
+  renderWeekly()
+  if (dayKey === todayKey()) render()
+}
+
+function deleteWeeklyTodo(dayKey, index) {
+  weeklyTodos[dayKey].splice(index, 1)
+  saveWeeklyTodos()
+  renderWeekly()
+  if (dayKey === todayKey()) render()
+}
+
+function renderWeekly() {
+  const weekDates = getWeekDates()
+  const tKey = todayKey()
+  const todayTodos = weeklyTodos[tKey] || []
+  const incompleteCount = todayTodos.filter(t => !t.done).length
+
+  weeklyBubbleText.textContent = incompleteCount === 0 ? '할 일 없음' : `할 일 ${incompleteCount}개`
+
+  weeklyColumns.innerHTML = ''
+
+  DAY_KEYS.forEach(key => {
+    const col = document.createElement('div')
+    col.className = `weekly-col${key === tKey ? ' today' : ''}`
+    col.dataset.day = key
+
+    const header = document.createElement('div')
+    header.className = 'weekly-col-header'
+    const labelSpan = document.createElement('span')
+    labelSpan.className = 'day-label'
+    labelSpan.textContent = DAY_LABELS[key]
+    const dateSpan = document.createElement('span')
+    dateSpan.className = 'day-date'
+    dateSpan.textContent = weekDates[key]
+    header.appendChild(labelSpan)
+    header.appendChild(dateSpan)
+
+    const list = document.createElement('div')
+    list.className = 'weekly-todo-list'
+    list.dataset.day = key
+    setupDropZone(list, key)
+
+    const dayTodos = weeklyTodos[key] || []
+    dayTodos.forEach((todo, index) => {
+      list.appendChild(createWeeklyTodoElement(todo, key, index))
+    })
+
+    const inputWrap = document.createElement('div')
+    inputWrap.className = 'weekly-input-area'
+    const input = document.createElement('input')
+    input.type = 'text'
+    input.className = 'weekly-todo-input'
+    input.placeholder = '+ 추가'
+    input.dataset.day = key
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.isComposing) {
+        addWeeklyTodo(key, input.value)
+        input.value = ''
+      }
+      if (e.key === 'Escape') collapseWeekly()
+    })
+    inputWrap.appendChild(input)
+
+    col.appendChild(header)
+    col.appendChild(list)
+    col.appendChild(inputWrap)
+    weeklyColumns.appendChild(col)
+  })
+}
+
+// ======================================================
 // Collapsed 상태 드래그 (클릭과 구분)
 // 캐릭터 캔버스 + 말풍선만 터치 영역
 // ======================================================
