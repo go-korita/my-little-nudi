@@ -250,6 +250,7 @@ function expandWeekly() {
 
 function collapseWeekly() {
   isWeekly = false
+  isExpanded = true
   weeklyView.classList.add('hidden')
   expandedView.classList.remove('hidden')
   ipcRenderer.send('window:weekly-collapse')
@@ -326,7 +327,7 @@ todoInput.addEventListener('keydown', (e) => {
 // 1시간 어텐션 모션
 // ======================================================
 function playAttentionAnimation() {
-  if (isExpanded) return // expanded 상태엔 모션 안 함
+  if (isExpanded || isWeekly) return // expanded 또는 weekly 상태엔 모션 안 함
 
   collapsedView.classList.add('attention-bounce')
   badge.classList.add('badge-flashing')
