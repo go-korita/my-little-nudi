@@ -12,6 +12,18 @@ let expandedRive = null   // expanded 상태 캐릭터
 let currentRiveFile = RIVE_FILE_DEFAULT  // 현재 적용 중인 .riv 파일
 
 // ======================================================
+// 요일 키 상수
+// ======================================================
+const DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
+const DAY_LABELS = { mon: '월', tue: '화', wed: '수', thu: '목', fri: '금', sat: '토', sun: '일' }
+
+let weeklyTodos = { mon: [], tue: [], wed: [], thu: [], fri: [], sat: [], sun: [] }
+
+function todayKey() {
+  return ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'][new Date().getDay()]
+}
+
+// ======================================================
 // Idle 감지 — 오래 안 누르면 upset 모션으로 교체
 // ======================================================
 const IDLE_TIMEOUT = 60 * 60 * 1000  // 1시간
@@ -45,7 +57,6 @@ function loadRiveCharacter(canvas, options = {}) {
 // ======================================================
 // 상태
 // ======================================================
-let todos = []
 let isExpanded = false
 
 // ======================================================
@@ -62,26 +73,38 @@ const todoList           = document.getElementById('todo-list')
 const todoInput          = document.getElementById('todo-input')
 const collapseBtn        = document.getElementById('collapse-btn')
 const cardEl             = document.getElementById('card')
+const weeklyView         = document.getElementById('weekly-view')
+const weeklyColumns      = document.getElementById('weekly-columns')
+const weeklyBubbleText   = document.getElementById('weekly-bubble-text')
+const weeklyBtn          = document.getElementById('weekly-btn')
+const weeklyCollapseBtn  = document.getElementById('weekly-collapse-btn')
+const weeklyCharCanvas   = document.getElementById('weekly-char-canvas')
 
 // ======================================================
 // 초기화
 // ======================================================
 async function init() {
-  // Rive 캐릭터 로드 (collapsed + expanded 둘 다 미리 로드)
   collapsedRive = loadRiveCharacter(characterCanvas, {
     stateMachine: 'State Machine 1'
   })
   expandedRive = loadRiveCharacter(headerCharCanvas, {
     stateMachine: 'State Machine 1'
   })
-  // expanded는 처음엔 숨겨져 있으니 pause
   expandedRive.pause()
 
-  // 저장된 투두 불러오기
-  todos = await ipcRenderer.invoke('store:get')
-  render()
+  // 주간 데이터 로드
+  weeklyTodos = await ipcRenderer.invoke('store:getWeekly')
 
-  // 15초마다 어텐션 모션
+  // 마이그레이션: 구버전 todos[] → 오늘 요일 키로 이관
+  const oldTodos = await ipcRenderer.invoke('store:get')
+  const isWeeklyEmpty = Object.values(weeklyTodos).every(arr => arr.length === 0)
+  if (oldTodos.length > 0 && isWeeklyEmpty) {
+    weeklyTodos[todayKey()] = oldTodos
+    saveWeeklyTodos()
+    ipcRenderer.invoke('store:set', [])
+  }
+
+  render()
   setInterval(playAttentionAnimation, 180 * 1000)
 }
 
@@ -89,18 +112,15 @@ async function init() {
 // 렌더링
 // ======================================================
 function render() {
-  const incompleteCount = todos.filter(t => !t.done).length
+  const todayTodos = weeklyTodos[todayKey()] || []
+  const incompleteCount = todayTodos.filter(t => !t.done).length
 
-  // 말풍선 텍스트
   speechText.textContent = incompleteCount === 0 ? '할 일 없음' : `할 일 ${incompleteCount}개`
-
-  // 뱃지
   badge.textContent = incompleteCount
   badge.classList.toggle('hidden', incompleteCount === 0)
 
-  // 투두 목록
   todoList.innerHTML = ''
-  todos.forEach((todo, index) => {
+  todayTodos.forEach((todo, index) => {
     todoList.appendChild(createTodoElement(todo, index))
   })
 }
@@ -135,25 +155,26 @@ function createTodoElement(todo, index) {
 function addTodo(text) {
   const trimmed = text.trim()
   if (!trimmed) return
-  todos.push({ id: Date.now(), text: trimmed, done: false })
-  saveTodos()
+  const key = todayKey()
+  weeklyTodos[key].push({ id: Date.now(), text: trimmed, done: false })
+  saveWeeklyTodos()
   render()
 }
 
 function toggleTodo(index) {
-  todos[index].done = !todos[index].done
-  saveTodos()
+  weeklyTodos[todayKey()][index].done = !weeklyTodos[todayKey()][index].done
+  saveWeeklyTodos()
   render()
 }
 
 function deleteTodo(index) {
-  todos.splice(index, 1)
-  saveTodos()
+  weeklyTodos[todayKey()].splice(index, 1)
+  saveWeeklyTodos()
   render()
 }
 
-function saveTodos() {
-  ipcRenderer.invoke('store:set', todos)
+function saveWeeklyTodos() {
+  ipcRenderer.invoke('store:setWeekly', weeklyTodos)
 }
 
 // ======================================================
