@@ -63,6 +63,14 @@
 
   /* 캐릭터 그림자 */
   --char-shadow: rgba(0, 0, 0, 0.25);
+
+  /* 위클리 뷰 */
+  --weekly-col-border: #E2E2E2;
+  --weekly-today-bg: rgba(26, 26, 26, 0.05);
+  --weekly-today-border: #1A1A1A;
+  --weekly-drag-over-bg: rgba(26, 26, 26, 0.08);
+  --weekly-bubble-bg: #FFFFFF;
+  --weekly-bubble-border: #D8D8D8;
 }
 
 /* ====== 다크모드 ====== */
@@ -112,6 +120,13 @@
     --badge-text: #FFFFFF;
 
     --char-shadow: rgba(0, 0, 0, 0.5);
+
+    --weekly-col-border: #48484A;
+    --weekly-today-bg: rgba(229, 229, 234, 0.08);
+    --weekly-today-border: #E5E5EA;
+    --weekly-drag-over-bg: rgba(255, 255, 255, 0.1);
+    --weekly-bubble-bg: #2C2C2E;
+    --weekly-bubble-border: #48484A;
   }
 }
 
@@ -580,4 +595,212 @@ html, body {
 
 .upset-bounce {
   animation: upset-bounce 2.4s ease-in-out;
+}
+
+/* ====== WEEKLY 상태 ====== */
+#weekly-view {
+  width: 1160px;
+  height: 440px;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  gap: 6px;
+}
+
+#weekly-columns {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  min-height: 0;
+  gap: 0;
+  border: 1px solid var(--weekly-col-border);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--card-bg);
+  background-image: var(--dot-pattern);
+  box-shadow: 0 6px 24px var(--card-shadow);
+}
+
+.weekly-col {
+  width: 160px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--weekly-col-border);
+  padding: 10px 8px 8px 8px;
+  transition: background 0.15s;
+}
+
+.weekly-col:last-child {
+  border-right: none;
+}
+
+.weekly-col.today {
+  background: var(--weekly-today-bg);
+}
+
+.weekly-col.drag-over {
+  background: var(--weekly-drag-over-bg);
+}
+
+.weekly-col-header {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--weekly-col-border);
+  margin-bottom: 6px;
+  flex-shrink: 0;
+}
+
+.weekly-col.today .weekly-col-header {
+  border-bottom-color: var(--weekly-today-border);
+}
+
+.day-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--card-title);
+}
+
+.weekly-col.today .day-label {
+  color: var(--weekly-today-border);
+}
+
+.day-date {
+  font-size: 12px;
+  color: var(--todo-done-text);
+}
+
+.weekly-todo-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.weekly-todo-list::-webkit-scrollbar {
+  width: 2px;
+}
+
+.weekly-todo-list::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 2px;
+}
+
+.weekly-todo-item {
+  cursor: grab;
+}
+
+.weekly-todo-item.dragging {
+  opacity: 0.4;
+}
+
+.weekly-todo-item .todo-text {
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.weekly-input-area {
+  border-top: 1px solid var(--divider);
+  padding-top: 6px;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.weekly-todo-input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  color: var(--input-text);
+  outline: none;
+  font-family: inherit;
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.weekly-todo-input::placeholder {
+  color: var(--input-placeholder);
+}
+
+/* 헤더 버튼 그룹 */
+.header-btns {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  -webkit-app-region: no-drag;
+}
+
+#weekly-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--collapse-color);
+  font-size: 17px;
+  line-height: 1;
+  padding: 0 3px;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+}
+
+#weekly-btn:hover {
+  color: var(--collapse-hover-color);
+  background: var(--collapse-hover-bg);
+}
+
+/* Weekly 푸터: 캐릭터 + 접기 버튼 */
+#weekly-footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-shrink: 0;
+  padding: 0 8px 2px 8px;
+}
+
+#weekly-char-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+#weekly-char-canvas {
+  display: block;
+  width: 52px;
+  height: 52px;
+  filter: drop-shadow(0px 2px 5px var(--char-shadow));
+}
+
+#weekly-bubble {
+  position: relative;
+  background: var(--weekly-bubble-bg);
+  border: 1px solid var(--weekly-bubble-border);
+  border-radius: 8px;
+  padding: 3px 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--bubble-text);
+  white-space: nowrap;
+  box-shadow: 0 2px 5px var(--bubble-shadow);
+}
+
+#weekly-collapse-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--collapse-color);
+  font-size: 23px;
+  line-height: 1;
+  padding: 0 2px;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+  align-self: flex-end;
+}
+
+#weekly-collapse-btn:hover {
+  color: var(--collapse-hover-color);
+  background: var(--collapse-hover-bg);
 }
