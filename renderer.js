@@ -552,7 +552,7 @@ function switchRiveFile(riveFile) {
       src: riveFile,
       stateMachine: 'State Machine 1'
     })
-    if (!isExpanded) expandedRive.pause()
+    if (!isExpanded || isWeekly) expandedRive.pause()
   }
 
   if (weeklyRive) {
