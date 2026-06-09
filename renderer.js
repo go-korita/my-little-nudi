@@ -94,6 +94,8 @@ async function init() {
 
   // 주간 데이터 로드
   weeklyTodos = await ipcRenderer.invoke('store:getWeekly')
+  const DEFAULT = { mon: [], tue: [], wed: [], thu: [], fri: [], sat: [], sun: [] }
+  weeklyTodos = { ...DEFAULT, ...weeklyTodos }
 
   // 마이그레이션: 구버전 todos[] → 오늘 요일 키로 이관
   const oldTodos = await ipcRenderer.invoke('store:get')
@@ -101,7 +103,7 @@ async function init() {
   if (oldTodos.length > 0 && isWeeklyEmpty) {
     weeklyTodos[todayKey()] = oldTodos
     saveWeeklyTodos()
-    ipcRenderer.invoke('store:set', [])
+    await ipcRenderer.invoke('store:set', [])
   }
 
   render()
