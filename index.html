@@ -24,7 +24,10 @@
     <div id="card">
       <div id="card-header">
         <span id="card-title">오늘 할 일</span>
-        <button id="collapse-btn" title="접기">−</button>
+        <div class="header-btns">
+          <button id="weekly-btn" title="이번 주">☰</button>
+          <button id="collapse-btn" title="접기">−</button>
+        </div>
       </div>
       <div id="todo-list"></div>
       <div id="input-area">
@@ -34,6 +37,22 @@
     <!-- 캐릭터 (카드 아래) -->
     <div id="expanded-bottom">
       <canvas id="header-char-canvas" width="96" height="96"></canvas>
+    </div>
+  </div>
+
+  <!-- ====== WEEKLY 상태 ====== -->
+  <div id="weekly-view" class="hidden">
+    <div id="weekly-columns">
+      <!-- renderer.js가 동적으로 생성 -->
+    </div>
+    <div id="weekly-footer">
+      <div id="weekly-char-area">
+        <canvas id="weekly-char-canvas" width="64" height="64"></canvas>
+        <div id="weekly-bubble">
+          <span id="weekly-bubble-text">할 일 없음</span>
+        </div>
+      </div>
+      <button id="weekly-collapse-btn" title="접기">−</button>
     </div>
   </div>
 
