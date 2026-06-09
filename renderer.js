@@ -9,6 +9,7 @@ const RIVE_FILE_UPSET = 'assets/nudi-motion-upset.riv'
 // Rive 인스턴스 관리 (나중에 모션 2~3가지로 확장 예정)
 let collapsedRive = null  // collapsed 상태 캐릭터
 let expandedRive = null   // expanded 상태 캐릭터
+let weeklyRive = null     // weekly 상태 캐릭터
 let currentRiveFile = RIVE_FILE_DEFAULT  // 현재 적용 중인 .riv 파일
 
 // ======================================================
@@ -92,6 +93,11 @@ async function init() {
     stateMachine: 'State Machine 1'
   })
   expandedRive.pause()
+
+  weeklyRive = loadRiveCharacter(weeklyCharCanvas, {
+    stateMachine: 'State Machine 1'
+  })
+  weeklyRive.pause()
 
   // 주간 데이터 로드
   weeklyTodos = await ipcRenderer.invoke('store:getWeekly')
@@ -244,6 +250,7 @@ function expandWeekly() {
   ipcRenderer.send('window:weekly-expand')
 
   if (expandedRive) expandedRive.pause()
+  if (weeklyRive) weeklyRive.play()
 
   renderWeekly()
 }
@@ -255,6 +262,7 @@ function collapseWeekly() {
   expandedView.classList.remove('hidden')
   ipcRenderer.send('window:weekly-collapse')
 
+  if (weeklyRive) weeklyRive.pause()
   if (expandedRive) expandedRive.play()
 
   render()
@@ -529,17 +537,15 @@ function switchRiveFile(riveFile) {
   if (currentRiveFile === riveFile) return
   currentRiveFile = riveFile
 
-  // collapsed 캐릭터 교체
   if (collapsedRive) {
     collapsedRive.cleanup()
     collapsedRive = loadRiveCharacter(characterCanvas, {
       src: riveFile,
       stateMachine: 'State Machine 1'
     })
-    if (isExpanded) collapsedRive.pause()
+    if (isExpanded || isWeekly) collapsedRive.pause()
   }
 
-  // expanded 캐릭터 교체
   if (expandedRive) {
     expandedRive.cleanup()
     expandedRive = loadRiveCharacter(headerCharCanvas, {
@@ -547,6 +553,15 @@ function switchRiveFile(riveFile) {
       stateMachine: 'State Machine 1'
     })
     if (!isExpanded) expandedRive.pause()
+  }
+
+  if (weeklyRive) {
+    weeklyRive.cleanup()
+    weeklyRive = loadRiveCharacter(weeklyCharCanvas, {
+      src: riveFile,
+      stateMachine: 'State Machine 1'
+    })
+    if (!isWeekly) weeklyRive.pause()
   }
 }
 
