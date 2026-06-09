@@ -6,6 +6,7 @@ let win
 
 // 창 열기 전 저장해둘 collapsed 위치
 let collapsedX, collapsedY
+let expandedX, expandedY
 
 function createWindow() {
   const { width: sw, height: sh } = screen.getPrimaryDisplay().workAreaSize
@@ -75,12 +76,27 @@ ipcMain.on('window:expand', () => {
   // 우측 하단 앵커를 유지하면서 크게 (서브 모니터 음수 좌표 허용)
   const newX = x + 180 - 280
   const newY = y + 180 - 440
+  expandedX = newX
+  expandedY = newY
   win.setBounds({ x: newX, y: newY, width: 280, height: 440 })
 })
 
 ipcMain.on('window:collapse', () => {
   // 저장된 collapsed 위치로 복원
   win.setBounds({ x: collapsedX, y: collapsedY, width: 180, height: 180 })
+})
+
+ipcMain.on('window:weekly-expand', () => {
+  const [x, y] = win.getPosition()
+  expandedX = x
+  expandedY = y
+  // 오른쪽 끝(x + 280) 고정, 왼쪽으로 확장
+  const newX = x + 280 - 1160
+  win.setBounds({ x: newX, y: y, width: 1160, height: 440 })
+})
+
+ipcMain.on('window:weekly-collapse', () => {
+  win.setBounds({ x: expandedX, y: expandedY, width: 280, height: 440 })
 })
 
 // ====== IPC: 클릭 통과 토글 ======
@@ -108,4 +124,15 @@ ipcMain.on('drag:move', (event, { mouseX, mouseY }) => {
     winStartX + (mouseX - dragStartX),
     winStartY + (mouseY - dragStartY)
   )
+})
+
+// ====== IPC: 주간 투두 저장/불러오기 ======
+const DEFAULT_WEEKLY = { mon: [], tue: [], wed: [], thu: [], fri: [], sat: [], sun: [] }
+
+ipcMain.handle('store:getWeekly', () => {
+  return store.get('weeklyTodos', DEFAULT_WEEKLY)
+})
+
+ipcMain.handle('store:setWeekly', (event, weeklyTodos) => {
+  store.set('weeklyTodos', weeklyTodos)
 })
