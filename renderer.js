@@ -77,9 +77,7 @@ const collapseBtn        = document.getElementById('collapse-btn')
 const cardEl             = document.getElementById('card')
 const weeklyView         = document.getElementById('weekly-view')
 const weeklyColumns      = document.getElementById('weekly-columns')
-const weeklyBubbleText   = document.getElementById('weekly-bubble-text')
 const weeklyBtn          = document.getElementById('weekly-btn')
-const weeklyCollapseBtn  = document.getElementById('weekly-collapse-btn')
 const weeklyCharCanvas   = document.getElementById('weekly-char-canvas')
 
 // ======================================================
@@ -248,6 +246,7 @@ function expandWeekly() {
   expandedView.classList.add('hidden')
   weeklyView.classList.remove('hidden')
   ipcRenderer.send('window:weekly-expand')
+  ipcRenderer.send('mouse:enter-interactive')
 
   if (expandedRive) expandedRive.pause()
   if (weeklyRive) weeklyRive.play()
@@ -261,9 +260,26 @@ function collapseWeekly() {
   weeklyView.classList.add('hidden')
   expandedView.classList.remove('hidden')
   ipcRenderer.send('window:weekly-collapse')
+  ipcRenderer.send('mouse:enter-interactive')
 
   if (weeklyRive) weeklyRive.pause()
   if (expandedRive) expandedRive.play()
+
+  render()
+}
+
+// weekly → collapsed 직행 (캐릭터 탭 시)
+function collapseWeeklyToCollapsed() {
+  isWeekly = false
+  isExpanded = false
+  weeklyView.classList.add('hidden')
+  collapsedView.classList.remove('hidden')
+  // weekly 창 크기 → collapsed 창 크기로 직접 전환
+  ipcRenderer.send('window:weekly-to-collapsed')
+  ipcRenderer.send('mouse:leave-interactive')
+
+  if (weeklyRive) weeklyRive.pause()
+  if (collapsedRive) collapsedRive.play()
 
   render()
 }
@@ -381,14 +397,10 @@ function deleteWeeklyTodo(dayKey, index) {
 function renderWeekly() {
   const weekDates = getWeekDates()
   const tKey = todayKey()
-  const todayTodos = weeklyTodos[tKey] || []
-  const incompleteCount = todayTodos.filter(t => !t.done).length
-
-  weeklyBubbleText.textContent = incompleteCount === 0 ? '할 일 없음' : `할 일 ${incompleteCount}개`
 
   weeklyColumns.innerHTML = ''
 
-  DAY_KEYS.forEach(key => {
+  DAY_KEYS.forEach((key, idx) => {
     const col = document.createElement('div')
     col.className = `weekly-col${key === tKey ? ' today' : ''}`
     col.dataset.day = key
@@ -403,6 +415,16 @@ function renderWeekly() {
     dateSpan.textContent = weekDates[key]
     header.appendChild(labelSpan)
     header.appendChild(dateSpan)
+
+    // 일요일 칼럼: 헤더 우측에 접기(−) 버튼 삽입
+    if (key === 'sun') {
+      const btn = document.createElement('button')
+      btn.className = 'weekly-col-collapse-btn'
+      btn.title = '접기'
+      btn.textContent = '−'
+      btn.addEventListener('click', collapseWeekly)
+      header.appendChild(btn)
+    }
 
     const list = document.createElement('div')
     list.className = 'weekly-todo-list'
@@ -434,6 +456,16 @@ function renderWeekly() {
     col.appendChild(list)
     col.appendChild(inputWrap)
     weeklyColumns.appendChild(col)
+
+    // 오늘 칼럼 아래에 캐릭터 절대 위치 설정 (카드 밖 #weekly-char-row 기준)
+    if (key === tKey) {
+      // view padding: 10px, 각 칼럼 160px
+      // char-row는 view padding 안에 있으므로 columns와 같은 기준
+      const colW = 160
+      const canvasW = 48
+      const leftOffset = idx * colW + (colW - canvasW) / 2
+      weeklyCharCanvas.style.left = `${leftOffset}px`
+    }
   })
 }
 
@@ -475,11 +507,18 @@ setupDragAndClick(speechBubble)
 // ======================================================
 collapseBtn.addEventListener('click', collapseWidget)
 weeklyBtn.addEventListener('click', expandWeekly)
-weeklyCollapseBtn.addEventListener('click', collapseWeekly)
+
+// 위클리 캐릭터 클릭 → collapsed 상태로 완전히 접기
+weeklyCharCanvas.addEventListener('mousedown', (e) => {
+  e.stopPropagation()
+  if (isWeekly) collapseWeeklyToCollapsed()
+})
+
+// 위클리 헤더 드래그: CSS -webkit-app-region: drag 로 처리 (JS 불필요)
 
 document.addEventListener('mousedown', (e) => {
-  if (isWeekly && !e.target.closest('#weekly-view')) {
-    collapseWeekly()
+  if (isWeekly) {
+    if (!e.target.closest('#weekly-view')) collapseWeekly()
     return
   }
   if (isExpanded && !e.target.closest('#card')) {

@@ -600,11 +600,11 @@ html, body {
 /* ====== WEEKLY 상태 ====== */
 #weekly-view {
   width: 1160px;
-  height: 440px;
+  height: 310px;
   display: flex;
   flex-direction: column;
-  padding: 10px;
-  gap: 6px;
+  padding: 8px 10px 6px 10px;
+  gap: 4px;
 }
 
 #weekly-columns {
@@ -645,7 +645,7 @@ html, body {
 
 .weekly-col-header {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 4px;
   padding-bottom: 6px;
   border-bottom: 1px solid var(--weekly-col-border);
@@ -751,56 +751,57 @@ html, body {
   background: var(--collapse-hover-bg);
 }
 
-/* Weekly 푸터: 캐릭터 + 접기 버튼 */
-#weekly-footer {
+/* Weekly 헤더: 드래그 핸들 역할 */
+#weekly-header {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
+  align-items: center;
   flex-shrink: 0;
-  padding: 0 8px 2px 8px;
+  padding: 0 4px 0 8px;
+  height: 22px;
+  -webkit-app-region: drag;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-#weekly-char-area {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
+#weekly-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--card-title);
+  opacity: 0.4;
+}
+
+/* Weekly 캐릭터: 카드 밖, 오늘 날짜 칼럼 아래 */
+#weekly-char-row {
+  position: relative;
+  height: 52px;
+  flex-shrink: 0;
 }
 
 #weekly-char-canvas {
-  display: block;
-  width: 52px;
-  height: 52px;
+  position: absolute;
+  top: 2px;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
   filter: drop-shadow(0px 2px 5px var(--char-shadow));
 }
 
-#weekly-bubble {
-  position: relative;
-  background: var(--weekly-bubble-bg);
-  border: 1px solid var(--weekly-bubble-border);
-  border-radius: 8px;
-  padding: 3px 8px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--bubble-text);
-  white-space: nowrap;
-  box-shadow: 0 2px 5px var(--bubble-shadow);
-}
-
-#weekly-collapse-btn {
+/* 일요일 칼럼 헤더 내 접기 버튼 */
+.weekly-col-collapse-btn {
   background: none;
   border: none;
   cursor: pointer;
   color: var(--collapse-color);
-  font-size: 23px;
+  font-size: 18px;
   line-height: 1;
   padding: 0 2px;
+  margin-left: auto;
   border-radius: 4px;
   transition: color 0.15s, background 0.15s;
-  align-self: flex-end;
+  flex-shrink: 0;
 }
 
-#weekly-collapse-btn:hover {
+.weekly-col-collapse-btn:hover {
   color: var(--collapse-hover-color);
   background: var(--collapse-hover-bg);
 }

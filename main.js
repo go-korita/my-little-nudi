@@ -92,11 +92,26 @@ ipcMain.on('window:weekly-expand', () => {
   expandedY = y
   // 오른쪽 끝(x + 280) 고정, 왼쪽으로 확장
   const newX = x + 280 - 1160
-  win.setBounds({ x: newX, y: y, width: 1160, height: 440 })
+  win.setBounds({ x: newX, y: y, width: 1160, height: 310 })
 })
 
 ipcMain.on('window:weekly-collapse', () => {
-  win.setBounds({ x: expandedX, y: expandedY, width: 280, height: 440 })
+  // 드래그 후에도 올바른 위치로: 현재 위치의 오른쪽 끝 기준
+  const [x, y] = win.getPosition()
+  const newX = x + 1160 - 280
+  expandedX = newX
+  expandedY = y
+  win.setBounds({ x: newX, y: y, width: 280, height: 440 })
+})
+
+ipcMain.on('window:weekly-to-collapsed', () => {
+  // 현재 위치의 오른쪽 하단 기준
+  const [x, y] = win.getPosition()
+  const newX = x + 1160 - 180
+  const newY = y + 310 - 180
+  collapsedX = newX
+  collapsedY = newY
+  win.setBounds({ x: newX, y: newY, width: 180, height: 180 })
 })
 
 // ====== IPC: 클릭 통과 토글 ======

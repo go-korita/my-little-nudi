@@ -42,17 +42,15 @@
 
   <!-- ====== WEEKLY 상태 ====== -->
   <div id="weekly-view" class="hidden">
+    <div id="weekly-header">
+      <span id="weekly-title">이번 주</span>
+    </div>
     <div id="weekly-columns">
       <!-- renderer.js가 동적으로 생성 -->
     </div>
-    <div id="weekly-footer">
-      <div id="weekly-char-area">
-        <canvas id="weekly-char-canvas" width="64" height="64"></canvas>
-        <div id="weekly-bubble">
-          <span id="weekly-bubble-text">할 일 없음</span>
-        </div>
-      </div>
-      <button id="weekly-collapse-btn" title="접기">−</button>
+    <!-- 캐릭터: 카드 밖, 오늘 날짜 아래에 절대 위치로 배치 -->
+    <div id="weekly-char-row">
+      <canvas id="weekly-char-canvas" width="64" height="64"></canvas>
     </div>
   </div>
 
