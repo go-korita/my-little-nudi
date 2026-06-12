@@ -2,5 +2,8 @@ node_modules/
 .DS_Store
 dist/
 build/
+!build/icon.ico
+!build/icon.icns
+!build/entitlements.mac.plist
 *.icns
 .vercel
