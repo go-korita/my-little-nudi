@@ -25,6 +25,7 @@ function createWindow() {
     hasShadow: false,
     resizable: false,
     skipTaskbar: true,
+    backgroundColor: '#00000000',
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false
@@ -45,10 +46,10 @@ app.whenReady().then(() => {
 
   // 컴퓨터 켤 때 자동 실행 (빌드된 앱에서만 동작)
   if (app.isPackaged) {
-    app.setLoginItemSettings({
-      openAtLogin: true,
-      openAsHidden: true
-    })
+    const loginSettings = { openAtLogin: true }
+    // openAsHidden은 macOS 전용 옵션
+    if (process.platform === 'darwin') loginSettings.openAsHidden = true
+    app.setLoginItemSettings(loginSettings)
   }
 })
 

@@ -5,7 +5,8 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build": "electron-builder --mac"
+    "build": "electron-builder --mac",
+    "build:win": "electron-builder --win"
   },
   "build": {
     "appId": "com.nudibranch.widget",
@@ -13,11 +14,23 @@
     "mac": {
       "category": "public.app-category.productivity",
       "target": "dmg",
+      "arch": ["universal"],
       "icon": "build/icon.icns",
       "entitlements": "build/entitlements.mac.plist",
       "entitlementsInherit": "build/entitlements.mac.plist",
       "hardenedRuntime": true,
       "notarize": true
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "shortcutName": "Nudi Todo"
     },
     "dmg": {
       "title": "Nudi Todo",
