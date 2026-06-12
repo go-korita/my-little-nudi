@@ -14,7 +14,6 @@
     "mac": {
       "category": "public.app-category.productivity",
       "target": "dmg",
-      "arch": ["universal"],
       "icon": "build/icon.icns",
       "entitlements": "build/entitlements.mac.plist",
       "entitlementsInherit": "build/entitlements.mac.plist",
