@@ -1,0 +1,117 @@
+@font-face {
+  font-family: 'omyu pretty';
+  src: url('assets/fonts/omyu pretty.ttf') format('truetype');
+  font-weight: 400;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'omyu pretty', sans-serif;
+  background: transparent;
+  -webkit-app-region: drag;
+  user-select: none;
+}
+
+#onboarding-wrap {
+  width: 480px;
+  height: 360px;
+  background: #FAFAFA;
+  border: 1px solid #D8D8D8;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+}
+
+@media (prefers-color-scheme: dark) {
+  #onboarding-wrap {
+    background: #2C2C2E;
+    border-color: #48484A;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+  #onboarding-title { color: #E5E5EA; }
+  #start-btn { background: #E5E5EA; color: #1A1A1A; }
+  #start-btn:disabled { background: #48484A; color: #888; }
+  .char-card {
+    background: #3A3A3C;
+    border-color: #48484A;
+  }
+  .char-card:hover {
+    border-color: #AEAEB2;
+  }
+  .char-card.selected {
+    border-color: #E5E5EA;
+    box-shadow: 0 0 0 3px rgba(229,229,234,0.15);
+  }
+}
+
+#onboarding-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: #1A1A1A;
+}
+
+#character-grid {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  -webkit-app-region: no-drag;
+}
+
+.char-card {
+  width: 96px;
+  height: 96px;
+  border: 2px solid #D8D8D8;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+  overflow: hidden;
+  background: #F5F5F5;
+}
+
+.char-card:hover {
+  border-color: #888;
+  transform: scale(1.04);
+}
+
+.char-card.selected {
+  border-color: #1A1A1A;
+  box-shadow: 0 0 0 3px rgba(26,26,26,0.12);
+}
+
+.char-card img {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+#start-btn {
+  -webkit-app-region: no-drag;
+  border: none;
+  background: #1A1A1A;
+  color: #FFFFFF;
+  font-family: inherit;
+  font-size: 15px;
+  padding: 10px 36px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+#start-btn:disabled {
+  background: #D8D8D8;
+  color: #999;
+  cursor: not-allowed;
+}
+
+#start-btn:not(:disabled):hover {
+  opacity: 0.85;
+}
