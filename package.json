@@ -12,13 +12,13 @@
     "productName": "Nudi Todo",
     "mac": {
       "category": "public.app-category.productivity",
-      "target": "dmg",
-      "arch": ["universal"],
+      "target": [
+        { "target": "mas", "arch": ["universal"] }
+      ],
       "icon": "build/icon.icns",
-      "entitlements": "build/entitlements.mac.plist",
-      "entitlementsInherit": "build/entitlements.mac.plist",
-      "hardenedRuntime": true,
-      "notarize": true
+      "entitlements": "build/entitlements.mas.plist",
+      "entitlementsInherit": "build/entitlements.mas.inherit.plist",
+      "hardenedRuntime": false
     },
     "dmg": {
       "title": "Nudi Todo",
@@ -42,6 +42,9 @@
       "index.html",
       "style.css",
       "renderer.js",
+      "onboarding.html",
+      "onboarding.css",
+      "onboarding.js",
       "assets/**/*"
     ]
   },
