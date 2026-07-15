@@ -3,14 +3,39 @@ const { ipcRenderer } = require('electron')
 // ======================================================
 // Nudi Todo 캐릭터 — Rive 애니메이션
 // ======================================================
-const RIVE_FILE_DEFAULT = 'assets/nudi-motion.riv'
-const RIVE_FILE_UPSET = 'assets/nudi-motion-upset.riv'
+const CHARACTERS = {
+  'nudi':   {
+    idle:    'assets/characters/nudi/idle.riv',
+    upset:   'assets/characters/nudi/upset.riv',
+    preview: 'assets/characters/nudi/preview.png',
+    hasRive: true
+  },
+  'char-b': {
+    idle:    'assets/characters/char-b/idle.riv',
+    upset:   'assets/characters/char-b/upset.riv',
+    preview: 'assets/characters/char-b/preview.png',
+    hasRive: false
+  },
+  'char-c': {
+    idle:    'assets/characters/char-c/idle.riv',
+    upset:   'assets/characters/char-c/upset.riv',
+    preview: 'assets/characters/char-c/preview.png',
+    hasRive: false
+  },
+  'char-d': {
+    idle:    'assets/characters/char-d/idle.riv',
+    upset:   'assets/characters/char-d/upset.riv',
+    preview: 'assets/characters/char-d/preview.png',
+    hasRive: false
+  }
+}
+
+let currentCharId = 'nudi'
 
 // Rive 인스턴스 관리 (나중에 모션 2~3가지로 확장 예정)
 let collapsedRive = null  // collapsed 상태 캐릭터
 let expandedRive = null   // expanded 상태 캐릭터
 let weeklyRive = null     // weekly 상태 캐릭터
-let currentRiveFile = RIVE_FILE_DEFAULT  // 현재 적용 중인 .riv 파일
 
 // ======================================================
 // 요일 키 상수
@@ -39,8 +64,9 @@ let isIdle = false
  * @returns {rive.Rive} Rive 인스턴스
  */
 function loadRiveCharacter(canvas, options = {}) {
+  const char = CHARACTERS[currentCharId] || CHARACTERS['nudi']
   const config = {
-    src: options.src || currentRiveFile,
+    src: options.src || char.idle,
     canvas: canvas,
     autoplay: true,
     fit: rive.Fit.Contain,
@@ -53,6 +79,66 @@ function loadRiveCharacter(canvas, options = {}) {
   }
 
   return new rive.Rive(config)
+}
+
+/**
+ * 캐릭터 전체 적용 (Rive or PNG 분기)
+ * hasRive: true  → canvas 표시, img 숨김, Rive 로드
+ * hasRive: false → canvas 숨김, img 표시 (preview.png)
+ */
+function applyCharacter(charId) {
+  const char = CHARACTERS[charId] || CHARACTERS['nudi']
+  currentCharId = charId
+
+  if (char.hasRive) {
+    // canvas 표시, img 숨김
+    characterCanvas.classList.remove('hidden')
+    headerCharCanvas.classList.remove('hidden')
+    weeklyCharCanvas.classList.remove('hidden')
+    characterImg.classList.add('hidden')
+    headerCharImg.classList.add('hidden')
+    weeklyCharImg.classList.add('hidden')
+
+    // 기존 Rive 정리 후 재로드
+    if (collapsedRive) { collapsedRive.cleanup(); collapsedRive = null }
+    if (expandedRive)  { expandedRive.cleanup();  expandedRive = null }
+    if (weeklyRive)    { weeklyRive.cleanup();     weeklyRive = null }
+
+    collapsedRive = loadRiveCharacter(characterCanvas, {
+      src: char.idle,
+      stateMachine: 'State Machine 1'
+    })
+    expandedRive = loadRiveCharacter(headerCharCanvas, {
+      src: char.idle,
+      stateMachine: 'State Machine 1'
+    })
+    weeklyRive = loadRiveCharacter(weeklyCharCanvas, {
+      src: char.idle,
+      stateMachine: 'State Machine 1'
+    })
+
+    if (isExpanded || isWeekly) collapsedRive.pause()
+    if (!isExpanded) expandedRive.pause()
+    if (!isWeekly)   weeklyRive.pause()
+
+  } else {
+    // canvas 숨김, img 표시
+    characterCanvas.classList.add('hidden')
+    headerCharCanvas.classList.add('hidden')
+    weeklyCharCanvas.classList.add('hidden')
+    characterImg.classList.remove('hidden')
+    headerCharImg.classList.remove('hidden')
+    weeklyCharImg.classList.remove('hidden')
+
+    characterImg.src   = char.preview
+    headerCharImg.src  = char.preview
+    weeklyCharImg.src  = char.preview
+
+    // 기존 Rive 정리
+    if (collapsedRive) { collapsedRive.cleanup(); collapsedRive = null }
+    if (expandedRive)  { expandedRive.cleanup();  expandedRive = null }
+    if (weeklyRive)    { weeklyRive.cleanup();     weeklyRive = null }
+  }
 }
 
 // ======================================================
@@ -79,28 +165,21 @@ const weeklyView         = document.getElementById('weekly-view')
 const weeklyColumns      = document.getElementById('weekly-columns')
 const weeklyBtn          = document.getElementById('weekly-btn')
 const weeklyCharCanvas   = document.getElementById('weekly-char-canvas')
+const characterImg    = document.getElementById('character-img')
+const headerCharImg   = document.getElementById('header-char-img')
+const weeklyCharImg   = document.getElementById('weekly-char-img')
 
 // ======================================================
 // 초기화
 // ======================================================
 async function init() {
-  collapsedRive = loadRiveCharacter(characterCanvas, {
-    stateMachine: 'State Machine 1'
-  })
-  expandedRive = loadRiveCharacter(headerCharCanvas, {
-    stateMachine: 'State Machine 1'
-  })
-  expandedRive.pause()
-
-  weeklyRive = loadRiveCharacter(weeklyCharCanvas, {
-    stateMachine: 'State Machine 1'
-  })
-  weeklyRive.pause()
+  // 선택된 캐릭터 로드
+  const charId = await ipcRenderer.invoke('character:get')
+  currentCharId = charId
+  applyCharacter(charId)
 
   // 주간 데이터 로드
   weeklyTodos = await ipcRenderer.invoke('store:getWeekly')
-  const DEFAULT = { mon: [], tue: [], wed: [], thu: [], fri: [], sat: [], sun: [] }
-  weeklyTodos = { ...DEFAULT, ...weeklyTodos }
 
   // 마이그레이션: 구버전 todos[] → 오늘 요일 키로 이관
   const oldTodos = await ipcRenderer.invoke('store:get')
@@ -108,7 +187,7 @@ async function init() {
   if (oldTodos.length > 0 && isWeeklyEmpty) {
     weeklyTodos[todayKey()] = oldTodos
     saveWeeklyTodos()
-    await ipcRenderer.invoke('store:set', [])
+    ipcRenderer.invoke('store:set', [])
   }
 
   render()
@@ -500,6 +579,7 @@ function setupDragAndClick(el) {
 }
 
 setupDragAndClick(characterCanvas)
+setupDragAndClick(characterImg)   // PNG 캐릭터 드래그/클릭 지원
 setupDragAndClick(speechBubble)
 
 // ======================================================
@@ -558,7 +638,7 @@ function playAttentionAnimation() {
 // ======================================================
 // 클릭 통과: 보이는 요소 위에서만 클릭 가능
 // ======================================================
-const interactiveEls = [speechBubble, characterCanvas, cardEl, headerCharCanvas.parentElement, weeklyView]
+const interactiveEls = [speechBubble, characterCanvas, characterImg, cardEl, headerCharCanvas.parentElement, weeklyView]
 
 interactiveEls.forEach(el => {
   el.addEventListener('mouseenter', () => {
@@ -573,8 +653,8 @@ interactiveEls.forEach(el => {
 // Idle 감지 — .riv 파일 교체
 // ======================================================
 function switchRiveFile(riveFile) {
-  if (currentRiveFile === riveFile) return
-  currentRiveFile = riveFile
+  const char = CHARACTERS[currentCharId] || CHARACTERS['nudi']
+  if (!char.hasRive) return  // PNG 캐릭터는 Rive 교체 없음
 
   if (collapsedRive) {
     collapsedRive.cleanup()
@@ -591,7 +671,7 @@ function switchRiveFile(riveFile) {
       src: riveFile,
       stateMachine: 'State Machine 1'
     })
-    if (!isExpanded || isWeekly) expandedRive.pause()
+    if (!isExpanded) expandedRive.pause()
   }
 
   if (weeklyRive) {
@@ -614,7 +694,8 @@ function playUpsetBounce() {
 function goIdle() {
   if (isIdle) return
   isIdle = true
-  switchRiveFile(RIVE_FILE_UPSET)
+  const char = CHARACTERS[currentCharId] || CHARACTERS['nudi']
+  switchRiveFile(char.upset)
   playUpsetBounce()
   upsetBounceInterval = setInterval(playUpsetBounce, 15 * 1000)  // 15초마다 1회
 }
@@ -622,7 +703,8 @@ function goIdle() {
 function resetIdleTimer() {
   if (isIdle) {
     isIdle = false
-    switchRiveFile(RIVE_FILE_DEFAULT)
+    const char = CHARACTERS[currentCharId] || CHARACTERS['nudi']
+    switchRiveFile(char.idle)
     collapsedView.classList.remove('upset-bounce')
     clearInterval(upsetBounceInterval)
   }
@@ -636,6 +718,21 @@ document.addEventListener('keydown', resetIdleTimer)
 
 // 최초 타이머 시작
 resetIdleTimer()
+
+// ====== 우클릭 → 컨텍스트 메뉴 ======
+characterCanvas.addEventListener('contextmenu', (e) => {
+  e.preventDefault()
+  ipcRenderer.send('show-context-menu')
+})
+characterImg.addEventListener('contextmenu', (e) => {
+  e.preventDefault()
+  ipcRenderer.send('show-context-menu')
+})
+
+// ====== 캐릭터 변경 이벤트 (온보딩에서 선택 완료 시) ======
+ipcRenderer.on('character:changed', (event, charId) => {
+  applyCharacter(charId)
+})
 
 // ======================================================
 // 시작
