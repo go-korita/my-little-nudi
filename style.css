@@ -63,6 +63,14 @@
 
   /* 캐릭터 그림자 */
   --char-shadow: rgba(0, 0, 0, 0.25);
+
+  /* 위클리 뷰 */
+  --weekly-col-border: #E2E2E2;
+  --weekly-today-bg: rgba(26, 26, 26, 0.05);
+  --weekly-today-border: #1A1A1A;
+  --weekly-drag-over-bg: rgba(26, 26, 26, 0.08);
+  --weekly-bubble-bg: #FFFFFF;
+  --weekly-bubble-border: #D8D8D8;
 }
 
 /* ====== 다크모드 ====== */
@@ -112,6 +120,13 @@
     --badge-text: #FFFFFF;
 
     --char-shadow: rgba(0, 0, 0, 0.5);
+
+    --weekly-col-border: #48484A;
+    --weekly-today-bg: rgba(229, 229, 234, 0.08);
+    --weekly-today-border: #E5E5EA;
+    --weekly-drag-over-bg: rgba(255, 255, 255, 0.1);
+    --weekly-bubble-bg: #2C2C2E;
+    --weekly-bubble-border: #48484A;
   }
 }
 
@@ -580,4 +595,213 @@ html, body {
 
 .upset-bounce {
   animation: upset-bounce 2.4s ease-in-out;
+}
+
+/* ====== WEEKLY 상태 ====== */
+#weekly-view {
+  width: 1160px;
+  height: 310px;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 10px 6px 10px;
+  gap: 4px;
+}
+
+#weekly-columns {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  min-height: 0;
+  gap: 0;
+  border: 1px solid var(--weekly-col-border);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--card-bg);
+  background-image: var(--dot-pattern);
+  box-shadow: 0 6px 24px var(--card-shadow);
+}
+
+.weekly-col {
+  width: 160px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--weekly-col-border);
+  padding: 10px 8px 8px 8px;
+  transition: background 0.15s;
+}
+
+.weekly-col:last-child {
+  border-right: none;
+}
+
+.weekly-col.today {
+  background: var(--weekly-today-bg);
+}
+
+.weekly-col.drag-over {
+  background: var(--weekly-drag-over-bg);
+}
+
+.weekly-col-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--weekly-col-border);
+  margin-bottom: 6px;
+  flex-shrink: 0;
+}
+
+.weekly-col.today .weekly-col-header {
+  border-bottom-color: var(--weekly-today-border);
+}
+
+.day-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--card-title);
+}
+
+.weekly-col.today .day-label {
+  color: var(--weekly-today-border);
+}
+
+.day-date {
+  font-size: 12px;
+  color: var(--todo-done-text);
+}
+
+.weekly-todo-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.weekly-todo-list::-webkit-scrollbar {
+  width: 2px;
+}
+
+.weekly-todo-list::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 2px;
+}
+
+.weekly-todo-item {
+  cursor: grab;
+}
+
+.weekly-todo-item.dragging {
+  opacity: 0.4;
+}
+
+.weekly-todo-item .todo-text {
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.weekly-input-area {
+  border-top: 1px solid var(--divider);
+  padding-top: 6px;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.weekly-todo-input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  color: var(--input-text);
+  outline: none;
+  font-family: inherit;
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.weekly-todo-input::placeholder {
+  color: var(--input-placeholder);
+}
+
+/* 헤더 버튼 그룹 */
+.header-btns {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  -webkit-app-region: no-drag;
+}
+
+#weekly-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--collapse-color);
+  font-size: 17px;
+  line-height: 1;
+  padding: 0 3px;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+}
+
+#weekly-btn:hover {
+  color: var(--collapse-hover-color);
+  background: var(--collapse-hover-bg);
+}
+
+/* Weekly 헤더: 드래그 핸들 역할 */
+#weekly-header {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 0 4px 0 8px;
+  height: 22px;
+  -webkit-app-region: drag;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#weekly-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--card-title);
+  opacity: 0.4;
+}
+
+/* Weekly 캐릭터: 카드 밖, 오늘 날짜 칼럼 아래 */
+#weekly-char-row {
+  position: relative;
+  height: 52px;
+  flex-shrink: 0;
+}
+
+#weekly-char-canvas {
+  position: absolute;
+  top: 2px;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  filter: drop-shadow(0px 2px 5px var(--char-shadow));
+}
+
+/* 일요일 칼럼 헤더 내 접기 버튼 */
+.weekly-col-collapse-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--collapse-color);
+  font-size: 18px;
+  line-height: 1;
+  padding: 0 2px;
+  margin-left: auto;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+  flex-shrink: 0;
+}
+
+.weekly-col-collapse-btn:hover {
+  color: var(--collapse-hover-color);
+  background: var(--collapse-hover-bg);
 }
