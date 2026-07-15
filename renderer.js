@@ -88,7 +88,7 @@ function loadRiveCharacter(canvas, options = {}) {
  */
 function applyCharacter(charId) {
   const char = CHARACTERS[charId] || CHARACTERS['nudi']
-  currentCharId = charId
+  currentCharId = CHARACTERS[charId] ? charId : 'nudi'
 
   if (char.hasRive) {
     // canvas 표시, img 숨김
@@ -175,11 +175,13 @@ const weeklyCharImg   = document.getElementById('weekly-char-img')
 async function init() {
   // 선택된 캐릭터 로드
   const charId = await ipcRenderer.invoke('character:get')
-  currentCharId = charId
   applyCharacter(charId)
 
   // 주간 데이터 로드
   weeklyTodos = await ipcRenderer.invoke('store:getWeekly')
+  // 누락된 요일 키 방어 (fresh install 또는 부분 손상 store 대응)
+  const DEFAULT_WEEKLY = { mon: [], tue: [], wed: [], thu: [], fri: [], sat: [], sun: [] }
+  weeklyTodos = { ...DEFAULT_WEEKLY, ...weeklyTodos }
 
   // 마이그레이션: 구버전 todos[] → 오늘 요일 키로 이관
   const oldTodos = await ipcRenderer.invoke('store:get')
@@ -593,6 +595,10 @@ weeklyCharCanvas.addEventListener('mousedown', (e) => {
   e.stopPropagation()
   if (isWeekly) collapseWeeklyToCollapsed()
 })
+weeklyCharImg.addEventListener('mousedown', (e) => {
+  e.stopPropagation()
+  if (isWeekly) collapseWeeklyToCollapsed()
+})
 
 // 위클리 헤더 드래그: CSS -webkit-app-region: drag 로 처리 (JS 불필요)
 
@@ -638,7 +644,7 @@ function playAttentionAnimation() {
 // ======================================================
 // 클릭 통과: 보이는 요소 위에서만 클릭 가능
 // ======================================================
-const interactiveEls = [speechBubble, characterCanvas, characterImg, cardEl, headerCharCanvas.parentElement, weeklyView]
+const interactiveEls = [speechBubble, characterCanvas, characterImg, cardEl, headerCharCanvas.parentElement, headerCharImg, weeklyView]
 
 interactiveEls.forEach(el => {
   el.addEventListener('mouseenter', () => {
