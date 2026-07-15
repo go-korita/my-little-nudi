@@ -1,12 +1,35 @@
-const { app, BrowserWindow, ipcMain, screen } = require('electron')
+const { app, BrowserWindow, ipcMain, screen, Menu } = require('electron')
 const Store = require('electron-store')
 
 const store = new Store()
 let win
+let onboardingWin   // ← 추가
 
 // 창 열기 전 저장해둘 collapsed 위치
 let collapsedX, collapsedY
 let expandedX, expandedY
+
+function createOnboardingWindow() {
+  if (onboardingWin) {
+    onboardingWin.focus()
+    return
+  }
+  onboardingWin = new BrowserWindow({
+    width: 480,
+    height: 360,
+    frame: false,
+    transparent: true,
+    alwaysOnTop: true,
+    resizable: false,
+    center: true,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false
+    }
+  })
+  onboardingWin.loadFile('onboarding.html')
+  onboardingWin.on('closed', () => { onboardingWin = null })
+}
 
 function createWindow() {
   const { width: sw, height: sh } = screen.getPrimaryDisplay().workAreaSize
@@ -42,19 +65,55 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
-  createWindow()
-
-  // 컴퓨터 켤 때 자동 실행 (빌드된 앱에서만 동작)
-  if (app.isPackaged) {
-    app.setLoginItemSettings({
-      openAtLogin: true,
-      openAsHidden: true
-    })
+  const selectedCharacter = store.get('selectedCharacter', null)
+  if (!selectedCharacter) {
+    createOnboardingWindow()
+  } else {
+    createWindow()
   }
 })
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()
+})
+
+// ====== IPC: 온보딩 완료 ======
+ipcMain.on('onboarding:complete', (event, charId) => {
+  store.set('selectedCharacter', charId)
+  if (onboardingWin) {
+    onboardingWin.close()
+    onboardingWin = null
+  }
+  if (!win) {
+    createWindow()
+  } else {
+    win.webContents.send('character:changed', charId)
+  }
+})
+
+// ====== IPC: 캐릭터 변경 (우클릭 메뉴) ======
+ipcMain.on('character:open-picker', () => {
+  createOnboardingWindow()
+})
+
+ipcMain.handle('character:get', () => {
+  return store.get('selectedCharacter', 'nudi')
+})
+
+// ====== IPC: 컨텍스트 메뉴 ======
+ipcMain.on('show-context-menu', () => {
+  const menu = Menu.buildFromTemplate([
+    {
+      label: '캐릭터 변경',
+      click: () => { createOnboardingWindow() }
+    },
+    { type: 'separator' },
+    {
+      label: '종료',
+      click: () => { app.quit() }
+    }
+  ])
+  menu.popup({ window: win })
 })
 
 // ====== IPC: 투두 데이터 저장/불러오기 ======
