@@ -805,3 +805,24 @@ html, body {
   color: var(--collapse-hover-color);
   background: var(--collapse-hover-bg);
 }
+
+/* ====== 캐릭터 PNG 폴백 ====== */
+.character-fallback {
+  object-fit: contain;
+  filter: drop-shadow(0px 2px 5px var(--char-shadow));
+}
+
+#character-img {
+  width: 146px;
+  height: 146px;
+}
+
+#header-char-img {
+  width: 96px;
+  height: 96px;
+}
+
+#weekly-char-img {
+  width: 52px;
+  height: 52px;
+}
