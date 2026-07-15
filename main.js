@@ -3,7 +3,7 @@ const Store = require('electron-store')
 
 const store = new Store()
 let win
-let onboardingWin   // ← 추가
+let onboardingWin
 
 // 창 열기 전 저장해둘 collapsed 위치
 let collapsedX, collapsedY
@@ -82,7 +82,7 @@ ipcMain.on('onboarding:complete', (event, charId) => {
   store.set('selectedCharacter', charId)
   if (onboardingWin) {
     onboardingWin.close()
-    onboardingWin = null
+    // null 처리는 'closed' 이벤트 리스너에서 수행
   }
   if (!win) {
     createWindow()
@@ -102,6 +102,7 @@ ipcMain.handle('character:get', () => {
 
 // ====== IPC: 컨텍스트 메뉴 ======
 ipcMain.on('show-context-menu', () => {
+  if (!win) return
   const menu = Menu.buildFromTemplate([
     {
       label: '캐릭터 변경',
