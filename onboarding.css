@@ -36,6 +36,17 @@ body {
   #onboarding-title { color: #E5E5EA; }
   #start-btn { background: #E5E5EA; color: #1A1A1A; }
   #start-btn:disabled { background: #48484A; color: #888; }
+  .char-card {
+    background: #3A3A3C;
+    border-color: #48484A;
+  }
+  .char-card:hover {
+    border-color: #AEAEB2;
+  }
+  .char-card.selected {
+    border-color: #E5E5EA;
+    box-shadow: 0 0 0 3px rgba(229,229,234,0.15);
+  }
 }
 
 #onboarding-title {
