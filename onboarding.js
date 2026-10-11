@@ -11,10 +11,15 @@ cards.forEach(card => {
     card.classList.add('selected')
     selectedId = card.dataset.id
     startBtn.disabled = false
+    document.documentElement.dataset.theme = selectedId
   })
 })
 
 startBtn.addEventListener('click', () => {
   if (!selectedId) return
   ipcRenderer.send('onboarding:complete', selectedId)
+})
+
+document.getElementById('close-btn').addEventListener('click', () => {
+  ipcRenderer.send('onboarding:close')
 })

@@ -15,8 +15,8 @@ function createOnboardingWindow() {
     return
   }
   onboardingWin = new BrowserWindow({
-    width: 480,
-    height: 360,
+    width: 360,
+    height: 400,
     frame: false,
     transparent: true,
     alwaysOnTop: true,
@@ -28,7 +28,15 @@ function createOnboardingWindow() {
     }
   })
   onboardingWin.loadFile('onboarding.html')
-  onboardingWin.on('closed', () => { onboardingWin = null })
+
+  // 온보딩 열리는 동안 위젯 마우스 이벤트 완전 차단
+  if (win) win.setIgnoreMouseEvents(true)
+
+  onboardingWin.on('closed', () => {
+    onboardingWin = null
+    // 온보딩 닫히면 위젯 마우스 이벤트 복구
+    if (win) win.setIgnoreMouseEvents(true, { forward: true })
+  })
 }
 
 function createWindow() {
@@ -96,8 +104,17 @@ ipcMain.on('character:open-picker', () => {
   createOnboardingWindow()
 })
 
+// ====== IPC: 온보딩 닫기 ======
+ipcMain.on('onboarding:close', () => {
+  if (onboardingWin) onboardingWin.close()
+})
+
 ipcMain.handle('character:get', () => {
   return store.get('selectedCharacter', 'nudi')
+})
+
+ipcMain.handle('character:set', (event, charId) => {
+  store.set('selectedCharacter', charId)
 })
 
 // ====== IPC: 컨텍스트 메뉴 ======

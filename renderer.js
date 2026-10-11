@@ -4,29 +4,29 @@ const { ipcRenderer } = require('electron')
 // Nudi Todo 캐릭터 — Rive 애니메이션
 // ======================================================
 const CHARACTERS = {
-  'nudi':   {
-    idle:    'assets/characters/nudi/idle.riv',
-    upset:   'assets/characters/nudi/upset.riv',
-    preview: 'assets/characters/nudi/preview.png',
+  'nudi': {
+    idle:    'assets/characters/nudi-idle.riv',
+    upset:   'assets/characters/nudi-upset.riv',
+    preview: 'assets/characters/nudi-preview.png',
     hasRive: true
   },
-  'char-b': {
-    idle:    'assets/characters/char-b/idle.riv',
-    upset:   'assets/characters/char-b/upset.riv',
-    preview: 'assets/characters/char-b/preview.png',
+  'cat': {
+    idle:    'assets/characters/cat-idle.riv',
+    upset:   'assets/characters/cat-upset.riv',
+    preview: 'assets/characters/cat-preview.png',
     hasRive: false
   },
-  'char-c': {
-    idle:    'assets/characters/char-c/idle.riv',
-    upset:   'assets/characters/char-c/upset.riv',
-    preview: 'assets/characters/char-c/preview.png',
-    hasRive: false
+  'rabbit': {
+    idle:    'assets/characters/rabbit-idle.riv',
+    upset:   'assets/characters/rabbit-upset.riv',
+    preview: 'assets/characters/rabbit-preview.png',
+    hasRive: true
   },
-  'char-d': {
-    idle:    'assets/characters/char-d/idle.riv',
-    upset:   'assets/characters/char-d/upset.riv',
-    preview: 'assets/characters/char-d/preview.png',
-    hasRive: false
+  'leaf': {
+    idle:    'assets/characters/leaf-idle.riv',
+    upset:   'assets/characters/leaf-upset.riv',
+    preview: 'assets/characters/leaf-preview.png',
+    hasRive: true
   }
 }
 
@@ -52,7 +52,7 @@ function todayKey() {
 // ======================================================
 // Idle 감지 — 오래 안 누르면 upset 모션으로 교체
 // ======================================================
-const IDLE_TIMEOUT = 60 * 60 * 1000  // 1시간
+const IDLE_TIMEOUT = 30 * 1000  // DEV: 30초 (원래 1시간)
 let idleTimer = null
 let upsetBounceInterval = null
 let isIdle = false
@@ -89,6 +89,7 @@ function loadRiveCharacter(canvas, options = {}) {
 function applyCharacter(charId) {
   const char = CHARACTERS[charId] || CHARACTERS['nudi']
   currentCharId = CHARACTERS[charId] ? charId : 'nudi'
+  document.documentElement.dataset.theme = currentCharId
 
   if (char.hasRive) {
     // canvas 표시, img 숨김
@@ -139,6 +140,13 @@ function applyCharacter(charId) {
     if (expandedRive)  { expandedRive.cleanup();  expandedRive = null }
     if (weeklyRive)    { weeklyRive.cleanup();     weeklyRive = null }
   }
+
+  // 캐릭터 바꾸면 idle 상태 리셋
+  isIdle = false
+  clearInterval(upsetBounceInterval)
+  collapsedView.classList.remove('upset-bounce')
+  clearTimeout(idleTimer)
+  idleTimer = setTimeout(goIdle, IDLE_TIMEOUT)
 }
 
 // ======================================================
@@ -172,10 +180,37 @@ const weeklyCharImg   = document.getElementById('weekly-char-img')
 // ======================================================
 // 초기화
 // ======================================================
+// ======================================================
+// DEV: 캐릭터 전환 바
+// ======================================================
+function initDevCharBar() {
+  const btns = document.querySelectorAll('.dev-char-btn')
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.char
+      applyCharacter(id)
+      ipcRenderer.invoke('character:set', id)
+      btns.forEach(b => b.classList.remove('active'))
+      btn.classList.add('active')
+    })
+  })
+}
+
+function updateDevCharBar(charId) {
+  document.querySelectorAll('.dev-char-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.char === charId)
+  })
+}
+
+// ======================================================
+// 초기화
+// ======================================================
 async function init() {
   // 선택된 캐릭터 로드
   const charId = await ipcRenderer.invoke('character:get')
   applyCharacter(charId)
+  initDevCharBar()
+  updateDevCharBar(charId)
 
   // 주간 데이터 로드
   weeklyTodos = await ipcRenderer.invoke('store:getWeekly')
@@ -562,6 +597,13 @@ function setupDragAndClick(el) {
 
     ipcRenderer.send('drag:start', { mouseX: startX, mouseY: startY })
 
+    function cleanup() {
+      document.removeEventListener('mousemove', onMouseMove)
+      document.removeEventListener('mouseup', onMouseUp)
+      document.removeEventListener('contextmenu', cleanup)
+      window.removeEventListener('blur', cleanup)
+    }
+
     function onMouseMove(e) {
       if (Math.abs(e.screenX - startX) > 4 || Math.abs(e.screenY - startY) > 4) {
         hasMoved = true
@@ -570,13 +612,14 @@ function setupDragAndClick(el) {
     }
 
     function onMouseUp() {
-      document.removeEventListener('mousemove', onMouseMove)
-      document.removeEventListener('mouseup', onMouseUp)
+      cleanup()
       if (!hasMoved) expandWidget()
     }
 
     document.addEventListener('mousemove', onMouseMove)
     document.addEventListener('mouseup', onMouseUp)
+    document.addEventListener('contextmenu', cleanup)
+    window.addEventListener('blur', cleanup)  // 창 포커스 잃으면 드래그 강제 종료
   })
 }
 
@@ -664,28 +707,19 @@ function switchRiveFile(riveFile) {
 
   if (collapsedRive) {
     collapsedRive.cleanup()
-    collapsedRive = loadRiveCharacter(characterCanvas, {
-      src: riveFile,
-      stateMachine: 'State Machine 1'
-    })
+    collapsedRive = loadRiveCharacter(characterCanvas, { src: riveFile })
     if (isExpanded || isWeekly) collapsedRive.pause()
   }
 
   if (expandedRive) {
     expandedRive.cleanup()
-    expandedRive = loadRiveCharacter(headerCharCanvas, {
-      src: riveFile,
-      stateMachine: 'State Machine 1'
-    })
+    expandedRive = loadRiveCharacter(headerCharCanvas, { src: riveFile })
     if (!isExpanded) expandedRive.pause()
   }
 
   if (weeklyRive) {
     weeklyRive.cleanup()
-    weeklyRive = loadRiveCharacter(weeklyCharCanvas, {
-      src: riveFile,
-      stateMachine: 'State Machine 1'
-    })
+    weeklyRive = loadRiveCharacter(weeklyCharCanvas, { src: riveFile })
     if (!isWeekly) weeklyRive.pause()
   }
 }

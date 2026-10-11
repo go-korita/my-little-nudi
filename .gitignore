@@ -5,3 +5,5 @@ build/*
 !build/entitlements.*.plist
 !build/icon.icns
 .vercel
+*.cer
+*.log

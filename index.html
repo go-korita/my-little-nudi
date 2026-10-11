@@ -26,10 +26,30 @@
       <div id="card-header">
         <span id="card-title">오늘 할 일</span>
         <div class="header-btns">
-          <button id="weekly-btn" title="이번 주">☰</button>
-          <button id="collapse-btn" title="접기">−</button>
+          <button id="weekly-btn" title="이번 주">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1.5 5 L1.5 3 Q1.5 1.5 3 1.5 L5 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M11.5 5 L11.5 3 Q11.5 1.5 10 1.5 L8 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M1.5 8 L1.5 10 Q1.5 11.5 3 11.5 L5 11.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M11.5 8 L11.5 10 Q11.5 11.5 10 11.5 L8 11.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <button id="collapse-btn" title="접기">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2.5 6.5 L10.5 6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
         </div>
       </div>
+      <!-- ▼ 테스트용 캐릭터 전환 바 — 배포 전 제거 -->
+      <div id="dev-char-bar">
+        <span class="dev-label">DEV</span>
+        <button class="dev-char-btn" data-char="nudi">누디</button>
+        <button class="dev-char-btn" data-char="cat">냐냐</button>
+        <button class="dev-char-btn" data-char="rabbit">토찌</button>
+        <button class="dev-char-btn" data-char="leaf">망이</button>
+      </div>
+      <!-- ▲ -->
       <div id="todo-list"></div>
       <div id="input-area">
         <input type="text" id="todo-input" placeholder="+ 빠르게 추가하기">

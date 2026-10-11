@@ -73,6 +73,93 @@
   --weekly-bubble-border: #D8D8D8;
 }
 
+/* ====== 캐릭터 테마 — 토찌 (연핑크) ====== */
+html[data-theme="rabbit"] {
+  --bubble-bg: #FFF5F5;
+  --bubble-border: #F0D6D8;
+  --bubble-tail-fill: #FFF5F5;
+  --card-bg: #FFF5F5;
+  --card-border: #F0D6D8;
+  --card-tail-fill: #FFF5F5;
+  --dot-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Ccircle cx='8' cy='8' r='2' fill='%23F2D3D5' fill-opacity='0.6'/%3E%3C/svg%3E");
+  --divider: #F0D6D8;
+  --checkbox-border: #F0D6D8;
+  --checkbox-hover-border: #F4A9AB;
+  --checkbox-checked-bg: #F4A9AB;
+  --checkbox-checked-border: #F4A9AB;
+  --checkbox-check-color: #FFFFFF;
+  --delete-bg: #FFF5F5;
+  --collapse-color: #F0C8C9;
+  --collapse-hover-color: #F4A9AB;
+  --collapse-hover-bg: rgba(244, 169, 171, 0.1);
+  --input-placeholder: #F0C8C9;
+  --scrollbar-thumb: #F0D6D8;
+  --weekly-col-border: #F0D6D8;
+  --weekly-today-bg: rgba(244, 169, 171, 0.1);
+  --weekly-today-border: #F4A9AB;
+  --weekly-drag-over-bg: rgba(244, 169, 171, 0.12);
+  --weekly-bubble-bg: #FFF5F5;
+  --weekly-bubble-border: #F0D6D8;
+}
+
+/* ====== 캐릭터 테마 — 냐냐 (아이보리/갈색) ====== */
+html[data-theme="cat"] {
+  --bubble-bg: #FAF5EC;
+  --bubble-border: #E5D8C3;
+  --bubble-tail-fill: #FAF5EC;
+  --card-bg: #FAF5EC;
+  --card-border: #E5D8C3;
+  --card-tail-fill: #FAF5EC;
+  --dot-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Ccircle cx='8' cy='8' r='2' fill='%23E6D9C4' fill-opacity='0.6'/%3E%3C/svg%3E");
+  --divider: #E5D8C3;
+  --checkbox-border: #E5D8C3;
+  --checkbox-hover-border: #D8A877;
+  --checkbox-checked-bg: #D8A877;
+  --checkbox-checked-border: #D8A877;
+  --checkbox-check-color: #FFFFFF;
+  --delete-bg: #FAF5EC;
+  --collapse-color: #DCC8A8;
+  --collapse-hover-color: #D8A877;
+  --collapse-hover-bg: rgba(216, 168, 119, 0.1);
+  --input-placeholder: #DCC8A8;
+  --scrollbar-thumb: #E5D8C3;
+  --weekly-col-border: #E5D8C3;
+  --weekly-today-bg: rgba(216, 168, 119, 0.1);
+  --weekly-today-border: #D8A877;
+  --weekly-drag-over-bg: rgba(216, 168, 119, 0.12);
+  --weekly-bubble-bg: #FAF5EC;
+  --weekly-bubble-border: #E5D8C3;
+}
+
+/* ====== 캐릭터 테마 — 망이 (연두/초록) ====== */
+html[data-theme="leaf"] {
+  --bubble-bg: #F5FAEE;
+  --bubble-border: #D8E7C6;
+  --bubble-tail-fill: #F5FAEE;
+  --card-bg: #F5FAEE;
+  --card-border: #D8E7C6;
+  --card-tail-fill: #F5FAEE;
+  --dot-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Ccircle cx='8' cy='8' r='2' fill='%23D6E7C2' fill-opacity='0.6'/%3E%3C/svg%3E");
+  --divider: #D8E7C6;
+  --checkbox-border: #D8E7C6;
+  --checkbox-hover-border: #8DC56F;
+  --checkbox-checked-bg: #8DC56F;
+  --checkbox-checked-border: #8DC56F;
+  --checkbox-check-color: #FFFFFF;
+  --delete-bg: #F5FAEE;
+  --collapse-color: #BCDEA6;
+  --collapse-hover-color: #8DC56F;
+  --collapse-hover-bg: rgba(141, 197, 111, 0.1);
+  --input-placeholder: #BCDEA6;
+  --scrollbar-thumb: #D8E7C6;
+  --weekly-col-border: #D8E7C6;
+  --weekly-today-bg: rgba(141, 197, 111, 0.1);
+  --weekly-today-border: #8DC56F;
+  --weekly-drag-over-bg: rgba(141, 197, 111, 0.12);
+  --weekly-bubble-bg: #F5FAEE;
+  --weekly-bubble-border: #D8E7C6;
+}
+
 /* ====== 다크모드 ====== */
 @media (prefers-color-scheme: dark) {
   :root {
@@ -127,6 +214,80 @@
     --weekly-drag-over-bg: rgba(255, 255, 255, 0.1);
     --weekly-bubble-bg: #2C2C2E;
     --weekly-bubble-border: #48484A;
+  }
+
+  /* 다크 공통값 — 토찌/냐냐/망이 */
+  html[data-theme="rabbit"],
+  html[data-theme="cat"],
+  html[data-theme="leaf"] {
+    --bubble-bg: #2C2C2C;
+    --bubble-border: #444444;
+    --bubble-tail-fill: #2C2C2C;
+    --bubble-text: #F2F2F2;
+    --card-bg: #2C2C2C;
+    --card-border: #444444;
+    --card-tail-fill: #2C2C2C;
+    --card-title: #F2F2F2;
+    --dot-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Ccircle cx='8' cy='8' r='2' fill='%23FFFFFF' fill-opacity='0.06'/%3E%3C/svg%3E");
+    --todo-text: #F2F2F2;
+    --todo-done-text: #7E7E7E;
+    --input-text: #F2F2F2;
+    --input-placeholder: #7E7E7E;
+    --collapse-color: #7E7E7E;
+    --weekly-bubble-bg: #2C2C2C;
+    --weekly-bubble-border: #444444;
+    --checkbox-check-color: #2C2C2C;
+  }
+
+  /* 다크 — 토찌 */
+  html[data-theme="rabbit"] {
+    --divider: #4A3A3D;
+    --weekly-col-border: #4A3A3D;
+    --checkbox-border: #8A6C70;
+    --checkbox-hover-border: #F4A9AB;
+    --checkbox-checked-bg: #F4A9AB;
+    --checkbox-checked-border: #F4A9AB;
+    --collapse-hover-color: #F4A9AB;
+    --collapse-hover-bg: rgba(244, 169, 171, 0.1);
+    --weekly-today-border: #F4A9AB;
+    --weekly-today-bg: rgba(244, 169, 171, 0.08);
+    --weekly-drag-over-bg: rgba(244, 169, 171, 0.1);
+    --scrollbar-thumb: #4A3A3D;
+    --delete-bg: #2C2C2C;
+  }
+
+  /* 다크 — 냐냐 */
+  html[data-theme="cat"] {
+    --divider: #4A4036;
+    --weekly-col-border: #4A4036;
+    --checkbox-border: #8A7660;
+    --checkbox-hover-border: #E3B07C;
+    --checkbox-checked-bg: #E3B07C;
+    --checkbox-checked-border: #E3B07C;
+    --collapse-hover-color: #E3B07C;
+    --collapse-hover-bg: rgba(227, 176, 124, 0.1);
+    --weekly-today-border: #E3B07C;
+    --weekly-today-bg: rgba(227, 176, 124, 0.08);
+    --weekly-drag-over-bg: rgba(227, 176, 124, 0.1);
+    --scrollbar-thumb: #4A4036;
+    --delete-bg: #2C2C2C;
+  }
+
+  /* 다크 — 망이 */
+  html[data-theme="leaf"] {
+    --divider: #3B4634;
+    --weekly-col-border: #3B4634;
+    --checkbox-border: #6B8460;
+    --checkbox-hover-border: #9CD07E;
+    --checkbox-checked-bg: #9CD07E;
+    --checkbox-checked-border: #9CD07E;
+    --collapse-hover-color: #9CD07E;
+    --collapse-hover-bg: rgba(156, 208, 126, 0.1);
+    --weekly-today-border: #9CD07E;
+    --weekly-today-bg: rgba(156, 208, 126, 0.08);
+    --weekly-drag-over-bg: rgba(156, 208, 126, 0.1);
+    --scrollbar-thumb: #3B4634;
+    --delete-bg: #2C2C2C;
   }
 }
 
@@ -316,9 +477,11 @@ html, body {
   border: none;
   cursor: pointer;
   color: var(--collapse-color);
-  font-size: 23px;
   line-height: 1;
   padding: 0 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 4px;
   transition: color 0.15s, background 0.15s;
   flex-shrink: 0;
@@ -344,6 +507,62 @@ html, body {
   height: 78px;
   -webkit-app-region: no-drag;
   filter: drop-shadow(0px 2px 6px var(--char-shadow));
+}
+
+/* ====== 테스트용 캐릭터 전환 바 ====== */
+#dev-char-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 0 6px 0;
+  border-bottom: 1px dashed var(--divider);
+  margin-bottom: 6px;
+  -webkit-app-region: no-drag;
+}
+
+.dev-label {
+  font-size: 9px;
+  font-weight: 600;
+  color: #E8000D;
+  letter-spacing: 0.5px;
+  margin-right: 2px;
+  opacity: 0.7;
+}
+
+.dev-char-btn {
+  background: rgba(0,0,0,0.05);
+  border: 1px solid var(--card-border);
+  border-radius: 5px;
+  font-size: 12px;
+  font-family: inherit;
+  color: var(--todo-text);
+  padding: 2px 7px;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.dev-char-btn:hover {
+  background: rgba(0,0,0,0.1);
+}
+
+.dev-char-btn.active {
+  background: #1A1A1A;
+  color: #FFFFFF;
+  border-color: #1A1A1A;
+}
+
+@media (prefers-color-scheme: dark) {
+  .dev-char-btn {
+    background: rgba(255,255,255,0.07);
+  }
+  .dev-char-btn:hover {
+    background: rgba(255,255,255,0.13);
+  }
+  .dev-char-btn.active {
+    background: #E5E5EA;
+    color: #1C1C1E;
+    border-color: #E5E5EA;
+  }
 }
 
 /* 투두 목록 */
@@ -739,11 +958,13 @@ html, body {
   border: none;
   cursor: pointer;
   color: var(--collapse-color);
-  font-size: 17px;
-  line-height: 1;
-  padding: 0 3px;
+  line-height: 0;
+  padding: 3px;
   border-radius: 4px;
   transition: color 0.15s, background 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #weekly-btn:hover {
